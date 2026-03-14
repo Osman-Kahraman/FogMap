@@ -15,6 +15,22 @@ struct MapViewRepresentable: UIViewRepresentable {
     static var exploredCoordinates: [CLLocationCoordinate2D] = []
     static var lastRecordedLocation: CLLocation?
 
+    static let storageKey = "explored_coordinates"
+
+    static func saveExplored() {
+        let array = exploredCoordinates.map { ["lat": $0.latitude, "lon": $0.longitude] }
+        UserDefaults.standard.set(array, forKey: storageKey)
+    }
+
+    static func loadExplored() {
+        guard let saved = UserDefaults.standard.array(forKey: storageKey) as? [[String: Double]] else { return }
+
+        exploredCoordinates = saved.compactMap {
+            guard let lat = $0["lat"], let lon = $0["lon"] else { return nil }
+            return CLLocationCoordinate2D(latitude: lat, longitude: lon)
+        }
+    }
+
     func makeUIView(context: Context) -> MKMapView {
 
         let mapView = MKMapView()
@@ -27,6 +43,9 @@ struct MapViewRepresentable: UIViewRepresentable {
         )
 
         mapView.setRegion(region, animated: false)
+
+        // load saved explored areas from disk
+        Self.loadExplored()
 
         return mapView
     }
@@ -57,10 +76,12 @@ struct MapViewRepresentable: UIViewRepresentable {
             if distance > 100 {
                 Self.exploredCoordinates.append(coordinate)
                 Self.lastRecordedLocation = location
+                Self.saveExplored()
             }
         } else {
             Self.exploredCoordinates.append(coordinate)
             Self.lastRecordedLocation = location
+            Self.saveExplored()
         }
 
         // Center the map only once at startup
