@@ -1,21 +1,38 @@
-//
-//  ContentView.swift
-//  FogMap
-//
-//  Created by Osman Kahraman on 2026-03-14.
-//
-
 import SwiftUI
+import MapKit
 
 struct ContentView: View {
+
+    @StateObject var locationManager = LocationManager()
+    @State private var recenterMap = false
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        ZStack {
+
+            MapViewRepresentable(locationManager: locationManager, recenter: $recenterMap)
+                .ignoresSafeArea()
+
+            VStack {
+                Spacer()
+
+                HStack {
+                    Spacer()
+
+                    Button {
+                        recenterMap = true
+                    } label: {
+                        Image(systemName: "location.fill")
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundColor(.white)
+                            .padding(14)
+                            .background(Color.blue)
+                            .clipShape(Circle())
+                            .shadow(radius: 5)
+                    }
+                    .padding()
+                }
+            }
         }
-        .padding()
     }
 }
 
