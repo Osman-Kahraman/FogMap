@@ -135,16 +135,33 @@ class GlobalFogOverlay: NSObject, MKOverlay {
 }
 
 class GlobalFogRenderer: MKOverlayRenderer {
+    
+    let maskImage = UIImage(named: "world_land_mask")?.cgImage
 
     override func draw(_ mapRect: MKMapRect, zoomScale: MKZoomScale, in context: CGContext) {
 
         let rect = self.rect(for: mapRect)
+        
+        guard let overlay = overlay as? GlobalFogOverlay else { return }
 
+        if let mask = maskImage {
+            context.saveGState()
+
+            // Flip the drawing context vertically so the mask matches MapKit
+            context.translateBy(x: rect.minX, y: rect.maxY)
+            context.scaleBy(x: 1.0, y: -1.0)
+
+            let flippedRect = CGRect(x: 0, y: 0, width: rect.width, height: rect.height)
+            context.clip(to: flippedRect, mask: mask)
+
+            // Restore translation so remaining drawing uses normal coordinates
+            context.scaleBy(x: 1.0, y: -1.0)
+            context.translateBy(x: -rect.minX, y: -rect.maxY)
+        }
+        
         // fill entire map with black fog
         context.setFillColor(UIColor.black.cgColor)
         context.fill(rect)
-
-        guard let overlay = overlay as? GlobalFogOverlay else { return }
 
         context.setBlendMode(.clear)
 
@@ -166,5 +183,8 @@ class GlobalFogRenderer: MKOverlayRenderer {
         }
 
         context.setBlendMode(.normal)
+        if maskImage != nil {
+            context.restoreGState()
+        }
     }
 }
