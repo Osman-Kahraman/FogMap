@@ -135,8 +135,24 @@ class GlobalFogOverlay: NSObject, MKOverlay {
 }
 
 class GlobalFogRenderer: MKOverlayRenderer {
-    
-    let maskImage = UIImage(named: "world_land_mask")?.cgImage
+
+    lazy var maskImage: CGImage? = { () -> CGImage? in
+
+        guard let image = UIImage(named: "world_land_mask"),
+              let ciImage = CIImage(image: image) else { return nil }
+
+        // Apply a small blur so fog edges look softer
+        guard let filter = CIFilter(name: "CIGaussianBlur") else { return nil }
+        filter.setValue(ciImage, forKey: kCIInputImageKey)
+        filter.setValue(2.0, forKey: kCIInputRadiusKey)
+
+        let context = CIContext(options: nil)
+
+        guard let output = filter.outputImage,
+              let cg = context.createCGImage(output, from: ciImage.extent) else { return nil }
+
+        return cg
+    }()
 
     override func draw(_ mapRect: MKMapRect, zoomScale: MKZoomScale, in context: CGContext) {
 
