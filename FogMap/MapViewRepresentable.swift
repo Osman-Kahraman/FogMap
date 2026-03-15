@@ -140,28 +140,33 @@ class GlobalFogRenderer: MKOverlayRenderer {
 
     override func draw(_ mapRect: MKMapRect, zoomScale: MKZoomScale, in context: CGContext) {
 
-        let rect = self.rect(for: mapRect)
-        
         guard let overlay = overlay as? GlobalFogOverlay else { return }
 
-        if let mask = maskImage {
-            context.saveGState()
+        let rect = self.rect(for: mapRect)
+        let worldRect = self.rect(for: overlay.boundingMapRect)
 
-            // Flip the drawing context vertically so the mask matches MapKit
-            context.translateBy(x: rect.minX, y: rect.maxY)
-            context.scaleBy(x: 1.0, y: -1.0)
-
-            let flippedRect = CGRect(x: 0, y: 0, width: rect.width, height: rect.height)
-            context.clip(to: flippedRect, mask: mask)
-
-            // Restore translation so remaining drawing uses normal coordinates
-            context.scaleBy(x: 1.0, y: -1.0)
-            context.translateBy(x: -rect.minX, y: -rect.maxY)
-        }
         
         // fill entire map with black fog
         context.setFillColor(UIColor.black.cgColor)
         context.fill(rect)
+
+        // Apply the land mask aligned to the entire world and flip vertically
+        if let mask = maskImage {
+
+            context.saveGState()
+
+            // Flip only vertically
+            context.translateBy(x: worldRect.minX, y: worldRect.maxY)
+            context.scaleBy(x: 1, y: -1)
+
+            let flippedRect = CGRect(x: 0, y: 0, width: worldRect.width, height: worldRect.height)
+
+            context.setBlendMode(.destinationIn)
+            context.draw(mask, in: flippedRect)
+            context.setBlendMode(.normal)
+
+            context.restoreGState()
+        }
 
         context.setBlendMode(.clear)
 
@@ -183,8 +188,5 @@ class GlobalFogRenderer: MKOverlayRenderer {
         }
 
         context.setBlendMode(.normal)
-        if maskImage != nil {
-            context.restoreGState()
-        }
     }
 }
