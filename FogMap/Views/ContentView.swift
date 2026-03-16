@@ -12,18 +12,19 @@ struct ContentView: View {
 
     @StateObject var locationManager = LocationManager()
     @State private var recenterMap = false
+    @AppStorage("appTheme") private var appTheme: String = "System"
 
     init() {
         let appearance = UITabBarAppearance()
         appearance.configureWithTransparentBackground()
 
         // Unselected items (normal)
-        appearance.stackedLayoutAppearance.normal.iconColor = UIColor.lightGray
-        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.white]
+        appearance.stackedLayoutAppearance.normal.iconColor = UIColor.secondaryLabel
+        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.secondaryLabel]
 
         // Selected items
-        appearance.stackedLayoutAppearance.selected.iconColor = UIColor.white
-        appearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor.white]
+        appearance.stackedLayoutAppearance.selected.iconColor = UIColor.label
+        appearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor.label]
 
         UITabBar.appearance().standardAppearance = appearance
         UITabBar.appearance().scrollEdgeAppearance = appearance
@@ -57,6 +58,11 @@ struct ContentView: View {
                     Text("Settings")
                 }
         }
+        .preferredColorScheme(
+            appTheme == "Dark" ? .dark :
+            appTheme == "Light" ? .light :
+            nil
+        )
     }
 }
 

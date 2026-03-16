@@ -8,6 +8,16 @@
 import SwiftUI
 
 struct SettingsView: View {
+
+    enum AppTheme: String, CaseIterable, Identifiable {
+        case system = "System"
+        case light = "Light"
+        case dark = "Dark"
+
+        var id: String { rawValue }
+    }
+
+    @AppStorage("appTheme") private var appTheme: String = AppTheme.system.rawValue
     @State private var iCloudEnabled = false
     @State private var iCloudAutoSync = true
 
@@ -15,6 +25,15 @@ struct SettingsView: View {
 
         NavigationStack {
             Form {
+                Section(header: Text("App Preferences")) {
+
+                    Picker("App Theme", selection: $appTheme) {
+                        ForEach(AppTheme.allCases) { theme in
+                            Text(theme.rawValue).tag(theme.rawValue)
+                        }
+                    }
+                }
+                
                 Section(header: Text("Cloud Backup")) {
 
                     Toggle("Enable iCloud Backup", isOn: $iCloudEnabled)
@@ -35,7 +54,7 @@ struct SettingsView: View {
                     }
                 }
             }
-            .navigationTitle("Cloud Backup")
+            .navigationTitle("Settings")
         }
     }
 }
