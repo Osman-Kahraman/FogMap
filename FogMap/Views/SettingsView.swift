@@ -20,6 +20,8 @@ struct SettingsView: View {
     @AppStorage("appTheme") private var appTheme: String = AppTheme.system.rawValue
     @State private var iCloudEnabled = false
     @State private var iCloudAutoSync = true
+    @State private var lastBackupDate: Date? = nil
+    @State private var backupSize: String = "0 MB"
 
     var body: some View {
 
@@ -34,7 +36,7 @@ struct SettingsView: View {
                     }
                 }
                 
-                Section(header: Text("Cloud Backup")) {
+                Section(header: Label("Cloud Backup", systemImage: "icloud")) {
 
                     Toggle("Enable iCloud Backup", isOn: $iCloudEnabled)
 
@@ -42,14 +44,33 @@ struct SettingsView: View {
                         .disabled(!iCloudEnabled)
 
                     Button("Backup Now") {
-                        // future icloud backup
+                        // simulate backup
+                        lastBackupDate = Date()
+                        backupSize = "2.3 MB"
+                    }
+                    .disabled(!iCloudEnabled)
+
+                    Button("Restore from iCloud") {
+                        // future restore logic
                     }
                     .disabled(!iCloudEnabled)
 
                     HStack {
                         Text("Last Backup")
                         Spacer()
-                        Text("Never")
+                        if let lastBackupDate {
+                            Text(lastBackupDate, style: .relative)
+                                .foregroundColor(.secondary)
+                        } else {
+                            Text("Never")
+                                .foregroundColor(.secondary)
+                        }
+                    }
+
+                    HStack {
+                        Text("Backup Size")
+                        Spacer()
+                        Text(backupSize)
                             .foregroundColor(.secondary)
                     }
                 }

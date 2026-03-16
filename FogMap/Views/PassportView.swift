@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct DiscoveryView: View {
+struct PassportView: View {
     var body: some View {
         VStack {
             Text("Passport")
@@ -17,5 +17,5 @@ struct DiscoveryView: View {
 }
 
 #Preview {
-    DiscoveryView()
+    PassportView()
 }

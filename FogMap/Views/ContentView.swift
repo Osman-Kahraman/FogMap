@@ -40,7 +40,7 @@ struct ContentView: View {
                     Text("Map")
                 }
 
-            DiscoveryView()
+            PassportView()
                 .tabItem {
                     Image(systemName: "wallet.pass")
                     Text("Passport")
