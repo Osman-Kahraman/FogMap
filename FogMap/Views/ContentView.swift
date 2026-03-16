@@ -48,7 +48,7 @@ struct ContentView: View {
 
             LeaderboardView()
                 .tabItem {
-                    Image(systemName: "record.circle.fill")
+                    Image(systemName: "trophy.fill")
                     Text("Leaderboard")
                 }
 
