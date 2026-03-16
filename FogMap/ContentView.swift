@@ -13,6 +13,24 @@ struct ContentView: View {
                 .ignoresSafeArea()
 
             VStack {
+                HStack(alignment: .lastTextBaseline, spacing: 8) {
+                    Text("Explored")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.white)
+
+                    Text(String(format: "%.5f%%", MapViewRepresentable.exploredPercentage()))
+                        .font(.system(size: 28, weight: .bold))
+                        .foregroundColor(.white)
+
+                    Spacer()
+                }
+                .padding(.leading, 16)
+                .padding(.top, 20)
+                
+                Spacer()
+            }
+
+            VStack {
                 Spacer()
 
                 HStack {

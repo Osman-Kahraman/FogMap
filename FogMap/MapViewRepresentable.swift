@@ -13,6 +13,20 @@ struct MapViewRepresentable: UIViewRepresentable {
     @ObservedObject var locationManager: LocationManager
     @Binding var recenter: Bool
     static var exploredCoordinates: [CLLocationCoordinate2D] = []
+    // Grid system to estimate explored world percentage
+    static var visitedTiles: Set<String> = []
+
+    static func tileKey(for coordinate: CLLocationCoordinate2D) -> String {
+        let lat = Int(coordinate.latitude * 10)
+        let lon = Int(coordinate.longitude * 10)
+        return "\(lat)_\(lon)"
+    }
+
+    static func exploredPercentage() -> Double {
+        let totalTiles = 6480000.0   // adjusted for larger grid tiles
+        return Double(visitedTiles.count) / totalTiles * 100
+    }
+
     static var lastRecordedLocation: CLLocation?
 
     static let storageKey = "explored_coordinates"
@@ -39,7 +53,6 @@ struct MapViewRepresentable: UIViewRepresentable {
         mapView.mapType = .standard
         mapView.showsUserLocation = true
         mapView.showsCompass = true
-        mapView.showsScale = true
         // Use the explicit API so the heading arrow appears reliably
         mapView.setUserTrackingMode(.followWithHeading, animated: false)
         // Add a visible compass button like Apple Maps
@@ -94,11 +107,15 @@ struct MapViewRepresentable: UIViewRepresentable {
                 Self.exploredCoordinates.append(coordinate)
                 Self.lastRecordedLocation = location
                 Self.saveExplored()
+                let key = Self.tileKey(for: coordinate)
+                Self.visitedTiles.insert(key)
             }
         } else {
             Self.exploredCoordinates.append(coordinate)
             Self.lastRecordedLocation = location
             Self.saveExplored()
+            let key = Self.tileKey(for: coordinate)
+            Self.visitedTiles.insert(key)
         }
 
         // Center the map only once at startup
