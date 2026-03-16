@@ -39,6 +39,7 @@ struct MapViewRepresentable: UIViewRepresentable {
         mapView.mapType = .standard
         mapView.showsUserLocation = true
         mapView.showsCompass = true
+        mapView.showsScale = true
         // Add a visible compass button like Apple Maps
         let compass = MKCompassButton(mapView: mapView)
         compass.compassVisibility = .visible
