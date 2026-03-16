@@ -197,14 +197,18 @@ class GlobalFogRenderer: MKOverlayRenderer {
         let rect = self.rect(for: mapRect)
         let worldRect = self.rect(for: overlay.boundingMapRect)
 
-        
-        // Draw fog texture instead of solid black
+        // Draw fog with high transparency (≈80% transparent)
+        context.saveGState()
+        context.setAlpha(0.8)
+
         if let fog = fogTexture {
             context.draw(fog, in: rect)
         } else {
             context.setFillColor(UIColor.black.cgColor)
             context.fill(rect)
         }
+
+        context.restoreGState()
 
         // Apply the land mask aligned to the entire world and flip vertically
         if let mask = maskImage {
