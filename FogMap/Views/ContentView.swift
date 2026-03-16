@@ -34,8 +34,8 @@ struct ContentView: View {
 
             DiscoveryView()
                 .tabItem {
-                    Image(systemName: "square.grid.2x2.fill")
-                    Text("Discovery")
+                    Image(systemName: "wallet.pass")
+                    Text("Passport")
                 }
 
             LeaderboardView()

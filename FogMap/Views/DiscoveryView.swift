@@ -11,7 +11,7 @@ import SwiftUI
 struct DiscoveryView: View {
     var body: some View {
         VStack {
-            Text("Discovery")
+            Text("Passport")
                 .font(.largeTitle)
         }
     }
