@@ -1,3 +1,10 @@
+//
+//  ContentView.swift
+//  FogMap
+//
+//  Created by Osman Kahraman on 2026-03-16.
+//
+
 import SwiftUI
 import MapKit
 
@@ -42,12 +49,6 @@ struct ContentView: View {
                 .tabItem {
                     Image(systemName: "record.circle.fill")
                     Text("Leaderboard")
-                }
-
-            CloudView()
-                .tabItem {
-                    Image(systemName: "cloud.fill")
-                    Text("Cloud")
                 }
 
             SettingsView()

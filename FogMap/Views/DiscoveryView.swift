@@ -5,7 +5,6 @@
 //  Created by Osman Kahraman on 2026-03-16.
 //
 
-
 import SwiftUI
 
 struct DiscoveryView: View {
