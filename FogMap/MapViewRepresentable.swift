@@ -34,6 +34,9 @@ struct MapViewRepresentable: UIViewRepresentable {
     func makeUIView(context: Context) -> MKMapView {
 
         let mapView = MKMapView()
+        // Force the map to use dark mode appearance
+        mapView.overrideUserInterfaceStyle = .dark
+        mapView.mapType = .standard
         mapView.showsUserLocation = true
         mapView.delegate = context.coordinator
 
@@ -154,6 +157,8 @@ class GlobalFogRenderer: MKOverlayRenderer {
         return cg
     }()
 
+    let fogTexture = UIImage(named: "fog_texture")?.cgImage
+
     override func draw(_ mapRect: MKMapRect, zoomScale: MKZoomScale, in context: CGContext) {
 
         guard let overlay = overlay as? GlobalFogOverlay else { return }
@@ -162,9 +167,13 @@ class GlobalFogRenderer: MKOverlayRenderer {
         let worldRect = self.rect(for: overlay.boundingMapRect)
 
         
-        // fill entire map with black fog
-        context.setFillColor(UIColor.black.cgColor)
-        context.fill(rect)
+        // Draw fog texture instead of solid black
+        if let fog = fogTexture {
+            context.draw(fog, in: rect)
+        } else {
+            context.setFillColor(UIColor.black.cgColor)
+            context.fill(rect)
+        }
 
         // Apply the land mask aligned to the entire world and flip vertically
         if let mask = maskImage {
