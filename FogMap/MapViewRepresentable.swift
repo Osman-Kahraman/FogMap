@@ -38,6 +38,17 @@ struct MapViewRepresentable: UIViewRepresentable {
         mapView.overrideUserInterfaceStyle = .dark
         mapView.mapType = .standard
         mapView.showsUserLocation = true
+        mapView.showsCompass = true
+        // Add a visible compass button like Apple Maps
+        let compass = MKCompassButton(mapView: mapView)
+        compass.compassVisibility = .visible
+        compass.translatesAutoresizingMaskIntoConstraints = false
+        mapView.addSubview(compass)
+
+        NSLayoutConstraint.activate([
+            compass.topAnchor.constraint(equalTo: mapView.safeAreaLayoutGuide.topAnchor, constant: 10),
+            compass.trailingAnchor.constraint(equalTo: mapView.trailingAnchor, constant: -10)
+        ])
         mapView.delegate = context.coordinator
 
         let region = MKCoordinateRegion(
