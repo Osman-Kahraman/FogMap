@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct PassportView: View {
+    @EnvironmentObject var authManager: AuthManager
+    
     var body: some View {
 
         ScrollView {
@@ -30,7 +32,7 @@ struct PassportView: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
                             Button("Logout") {
-                                // logout logic will go here
+                                authManager.isLoggedIn = false
                             }
                             .font(.caption)
                             .foregroundColor(.red)

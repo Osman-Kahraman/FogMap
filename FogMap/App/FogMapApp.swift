@@ -9,9 +9,20 @@ import SwiftUI
 
 @main
 struct FogMapApp: App {
+
+    @StateObject var authManager = AuthManager()
+
     var body: some Scene {
+
         WindowGroup {
-            ContentView()
+
+            if authManager.isLoggedIn {
+                ContentView()
+                    .environmentObject(authManager)
+            } else {
+                LoginView()
+                    .environmentObject(authManager)
+            }
         }
     }
 }
