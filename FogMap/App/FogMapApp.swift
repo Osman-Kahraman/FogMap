@@ -32,6 +32,7 @@ struct FogMapApp: App {
             .onOpenURL { url in
                 GIDSignIn.sharedInstance.handle(url)
             }
+            .preferredColorScheme(.dark)
         }
     }
 }

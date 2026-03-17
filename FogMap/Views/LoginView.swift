@@ -123,7 +123,7 @@ var body: some View {
                     }
                 )
                 .frame(height: 50)
-                .signInWithAppleButtonStyle(.black)
+                .signInWithAppleButtonStyle(.white)
 
                 Button {
                     Task {
@@ -171,7 +171,6 @@ var body: some View {
 
             Spacer()
         }
-        .navigationTitle("Login")
     }
     }
 }

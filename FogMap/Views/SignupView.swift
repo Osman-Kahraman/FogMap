@@ -19,63 +19,120 @@ struct SignupView: View {
     @State private var password = ""
     @State private var confirmPassword = ""
 
+    private var countries: [(code: String, name: String)] {
+        Locale.Region.isoRegions
+            .filter { $0.identifier.count == 2 } // only real ISO country codes
+            .compactMap { region in
+                guard let name = Locale.current.localizedString(forRegionCode: region.identifier) else { return nil }
+                return (code: region.identifier, name: name)
+            }
+            .sorted { $0.name < $1.name }
+    }
+
     var body: some View {
 
         VStack(spacing: 25) {
-
             Spacer()
 
-            Text("Create Account")
-                .font(.largeTitle)
-                .fontWeight(.bold)
+            VStack(spacing: 22) {
+                VStack(alignment: .leading, spacing: 10) {
 
-            VStack(spacing: 16) {
+                    Text("Name")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .padding(.leading, 6)
 
-                TextField("First Name", text: $firstName)
-                    .textInputAutocapitalization(.words)
+                    VStack(spacing: 12) {
+
+                        TextField("First Name", text: $firstName)
+                            .textInputAutocapitalization(.words)
+                            .frame(maxWidth: 300)
+                            .padding()
+                            .background(.ultraThinMaterial)
+                            .cornerRadius(12)
+
+                        TextField("Last Name", text: $lastName)
+                            .textInputAutocapitalization(.words)
+                            .frame(maxWidth: 300)
+                            .padding()
+                            .background(.ultraThinMaterial)
+                            .cornerRadius(12)
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 10) {
+
+                    Text("Nationality")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .padding(.leading, 6)
+
+                    Picker(selection: $nationality) {
+                        Text("Select Nationality").tag("")
+                        ForEach(countries, id: \.code) { country in
+                            let flag = country.code
+                                .uppercased()
+                                .unicodeScalars
+                                .compactMap { UnicodeScalar(127397 + $0.value) }
+                                .map { String($0) }
+                                .joined()
+
+                            Text("\(flag) \(country.name)")
+                                .tag(country.name)
+                        }
+                    } label: {
+                        Text(nationality.isEmpty ? "Select Nationality" : nationality)
+                            .foregroundColor(.black)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .pickerStyle(.menu)
+                    .tint(.gray)
+                    .frame(maxWidth: 300)
                     .padding()
                     .background(.ultraThinMaterial)
                     .cornerRadius(12)
+                }
 
-                TextField("Last Name", text: $lastName)
-                    .textInputAutocapitalization(.words)
-                    .padding()
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(12)
+                VStack(alignment: .leading, spacing: 10) {
 
-                TextField("Nationality", text: $nationality)
-                    .textInputAutocapitalization(.words)
-                    .padding()
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(12)
+                    Text("Account")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .padding(.leading, 6)
 
-                TextField("Email", text: $email)
-                    .keyboardType(.emailAddress)
-                    .textInputAutocapitalization(.never)
-                    .padding()
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(12)
+                    VStack(spacing: 12) {
 
-                SecureField("Password", text: $password)
-                    .textContentType(.newPassword)
-                    .autocorrectionDisabled()
-                    .textInputAutocapitalization(.never)
-                    .padding()
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(12)
+                        TextField("Email", text: $email)
+                            .keyboardType(.emailAddress)
+                            .textInputAutocapitalization(.never)
+                            .frame(maxWidth: 300)
+                            .padding()
+                            .background(.ultraThinMaterial)
+                            .cornerRadius(12)
 
-                SecureField("Confirm Password", text: $confirmPassword)
-                    .textContentType(.newPassword)
-                    .autocorrectionDisabled()
-                    .textInputAutocapitalization(.never)
-                    .padding()
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(12)
+                        SecureField("Password", text: $password)
+                            .textContentType(.newPassword)
+                            .autocorrectionDisabled()
+                            .textInputAutocapitalization(.never)
+                            .frame(maxWidth: 300)
+                            .padding()
+                            .background(.ultraThinMaterial)
+                            .cornerRadius(12)
+
+                        SecureField("Confirm Password", text: $confirmPassword)
+                            .textContentType(.newPassword)
+                            .autocorrectionDisabled()
+                            .textInputAutocapitalization(.never)
+                            .frame(maxWidth: 300)
+                            .padding()
+                            .background(.ultraThinMaterial)
+                            .cornerRadius(12)
+                    }
+                }
             }
             .padding(.horizontal)
 
             Button {
-
                 guard password == confirmPassword else { return }
 
                 Task {
@@ -105,8 +162,7 @@ struct SignupView: View {
                 }
 
             } label: {
-
-                Text("Create Account")
+                Text("Create")
                     .fontWeight(.bold)
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -118,7 +174,7 @@ struct SignupView: View {
 
             Spacer()
         }
-        .navigationTitle("Sign Up")
+        .navigationTitle("Create Account")
     }
 }
 
