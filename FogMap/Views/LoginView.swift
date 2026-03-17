@@ -5,16 +5,17 @@
 //  Created by Osman Kahraman on 2026-03-16.
 //
 
-
 import SwiftUI
 
 struct LoginView: View {
-
     @EnvironmentObject var authManager: AuthManager
     @State private var email = ""
     @State private var password = ""
+    @State private var showSignup = false
 
-    var body: some View {
+var body: some View {
+
+    NavigationStack {
 
         VStack(spacing: 30) {
 
@@ -123,18 +124,22 @@ struct LoginView: View {
 
             // Sign up
             HStack {
-
                 Text("Don't have an account?")
-
                 Button("Sign Up") {
-                    // sign up
+                    showSignup = true
                 }
                 .fontWeight(.bold)
+            }
+            .sheet(isPresented: $showSignup) {
+                NavigationStack {
+                    SignupView()
+                }
             }
 
             Spacer()
         }
         .navigationTitle("Login")
+    }
     }
 }
 

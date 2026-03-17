@@ -6,11 +6,15 @@
 //
 
 import SwiftUI
+import FirebaseCore
 
 @main
 struct FogMapApp: App {
-
     @StateObject var authManager = AuthManager()
+
+    init() {
+        FirebaseApp.configure()
+    }
 
     var body: some Scene {
 

@@ -7,41 +7,42 @@
 
 
 import Foundation
+import FirebaseAuth
 
 class AuthManager: ObservableObject {
 
-    @Published var isLoggedIn = false
+    private var authStateListener: AuthStateDidChangeListenerHandle?
+
+    @Published var isLoggedIn: Bool = Auth.auth().currentUser != nil
+
+    init() {
+        authStateListener = Auth.auth().addStateDidChangeListener { [weak self] _, user in
+            DispatchQueue.main.async {
+                self?.isLoggedIn = user != nil
+            }
+        }
+    }
 
     func login(email: String, password: String) async throws {
+        let result = try await Auth.auth().signIn(withEmail: email, password: password)
 
-        // burada backend API çağrısı olacak
-
-        let url = URL(string: "https://api.fogmap.com/login")!
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-
-        let body = [
-            "email": email,
-            "password": password
-        ]
-
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
-
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-        let (_, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw URLError(.badServerResponse)
+        DispatchQueue.main.async {
+            self.isLoggedIn = result.user != nil
         }
+    }
+    
+    func createAccount(email: String, password: String) async throws {
+        let result = try await Auth.auth().createUser(withEmail: email, password: password)
 
-        if httpResponse.statusCode == 200 {
-            DispatchQueue.main.async {
-                self.isLoggedIn = true
-            }
-        } else {
-            throw URLError(.userAuthenticationRequired)
+        DispatchQueue.main.async {
+            self.isLoggedIn = result.user != nil
+        }
+    }
+
+    func logout() throws {
+        try Auth.auth().signOut()
+        DispatchQueue.main.async {
+            self.isLoggedIn = false
         }
     }
 }
