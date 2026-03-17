@@ -12,7 +12,7 @@ struct ContentView: View {
 
     @StateObject var locationManager = LocationManager()
     @State private var recenterMap = false
-    @AppStorage("appTheme") private var appTheme: String = "System"
+    @AppStorage("appTheme") private var appTheme: String = "Dark"
 
     init() {
         let appearance = UITabBarAppearance()

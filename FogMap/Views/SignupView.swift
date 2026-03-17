@@ -6,9 +6,15 @@
 //
 
 import SwiftUI
+import FirebaseAuth
+import FirebaseFirestore
+import PhotosUI
 
 struct SignupView: View {
     @EnvironmentObject var authManager: AuthManager
+    @State private var firstName = ""
+    @State private var lastName = ""
+    @State private var nationality = ""
     @State private var email = ""
     @State private var password = ""
     @State private var confirmPassword = ""
@@ -24,6 +30,24 @@ struct SignupView: View {
                 .fontWeight(.bold)
 
             VStack(spacing: 16) {
+
+                TextField("First Name", text: $firstName)
+                    .textInputAutocapitalization(.words)
+                    .padding()
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(12)
+
+                TextField("Last Name", text: $lastName)
+                    .textInputAutocapitalization(.words)
+                    .padding()
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(12)
+
+                TextField("Nationality", text: $nationality)
+                    .textInputAutocapitalization(.words)
+                    .padding()
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(12)
 
                 TextField("Email", text: $email)
                     .keyboardType(.emailAddress)
@@ -57,7 +81,24 @@ struct SignupView: View {
                 Task {
                     do {
                         try await authManager.createAccount(email: email, password: password)
-                        print("User created successfully")
+
+                        guard let uid = Auth.auth().currentUser?.uid else { return }
+
+                        let db = Firestore.firestore()
+
+                        let photoURL: String = ""
+
+                        try await db.collection("users").document(uid).setData([
+                            "firstName": firstName,
+                            "lastName": lastName,
+                            "nationality": nationality,
+                            "email": email,
+                            "photoURL": photoURL,
+                            "createdAt": Timestamp(date: Date())
+                        ])
+
+                        print("User created and profile saved")
+
                     } catch {
                         print("Signup error:", error.localizedDescription)
                     }

@@ -5,7 +5,6 @@
 //  Created by Osman Kahraman on 2026-03-16.
 //
 
-
 import Foundation
 import FirebaseAuth
 import FirebaseCore
@@ -37,7 +36,7 @@ class AuthManager: ObservableObject {
     }
     
     func createAccount(email: String, password: String) async throws {
-        _ = try await Auth.auth().signIn(withEmail: email, password: password)
+        _ = try await Auth.auth().createUser(withEmail: email, password: password)
 
         DispatchQueue.main.async {
             self.isLoggedIn = true
