@@ -100,7 +100,14 @@ var body: some View {
                 }
 
                 Button {
-                    // Google login
+                    Task {
+                        do {
+                            try await authManager.signInWithGoogle()
+                            print("Google login success")
+                        } catch {
+                            print("Google login error:", error)
+                        }
+                    }
                 } label: {
 
                     HStack(spacing: 8) {
@@ -145,4 +152,5 @@ var body: some View {
 
 #Preview {
     LoginView()
+        .environmentObject(AuthManager())
 }

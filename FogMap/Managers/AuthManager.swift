@@ -8,6 +8,9 @@
 
 import Foundation
 import FirebaseAuth
+import FirebaseCore
+import GoogleSignIn
+import UIKit
 
 class AuthManager: ObservableObject {
 
@@ -18,24 +21,24 @@ class AuthManager: ObservableObject {
     init() {
         authStateListener = Auth.auth().addStateDidChangeListener { [weak self] _, user in
             DispatchQueue.main.async {
-                self?.isLoggedIn = user != nil
+                self?.isLoggedIn = (user != nil)
             }
         }
     }
 
     func login(email: String, password: String) async throws {
-        let result = try await Auth.auth().signIn(withEmail: email, password: password)
+        _ = try await Auth.auth().signIn(withEmail: email, password: password)
 
         DispatchQueue.main.async {
-            self.isLoggedIn = result.user != nil
+            self.isLoggedIn = true
         }
     }
     
     func createAccount(email: String, password: String) async throws {
-        let result = try await Auth.auth().createUser(withEmail: email, password: password)
+        _ = try await Auth.auth().signIn(withEmail: email, password: password)
 
         DispatchQueue.main.async {
-            self.isLoggedIn = result.user != nil
+            self.isLoggedIn = true
         }
     }
 
@@ -43,6 +46,39 @@ class AuthManager: ObservableObject {
         try Auth.auth().signOut()
         DispatchQueue.main.async {
             self.isLoggedIn = false
+        }
+    }
+    
+    func signInWithGoogle() async throws {
+        guard let clientID = FirebaseApp.app()?.options.clientID else {
+            throw NSError(domain: "GoogleSignIn", code: -1)
+        }
+
+        let config = GIDConfiguration(clientID: clientID)
+        GIDSignIn.sharedInstance.configuration = config
+
+        let rootVC = await MainActor.run { () -> UIViewController? in
+            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else {
+                return nil
+            }
+            return windowScene.windows.first?.rootViewController
+        }
+
+        guard let rootVC else { return }
+
+        let result = try await GIDSignIn.sharedInstance.signIn(withPresenting: rootVC)
+
+        guard let idToken = result.user.idToken?.tokenString else { return }
+
+        let credential = GoogleAuthProvider.credential(
+            withIDToken: idToken,
+            accessToken: result.user.accessToken.tokenString
+        )
+
+        let authResult = try await Auth.auth().signIn(with: credential)
+
+        DispatchQueue.main.async {
+            self.isLoggedIn = true
         }
     }
 }

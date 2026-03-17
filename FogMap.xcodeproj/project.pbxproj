@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		712CFB1E2F692A12009B20F9 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 712CFB1D2F692A12009B20F9 /* GoogleSignIn */; };
+		712CFB202F692A12009B20F9 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 712CFB1F2F692A12009B20F9 /* GoogleSignInSwift */; };
 		718696F02F690C0D005BBE63 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 718696EF2F690C0D005BBE63 /* FirebaseAuth */; };
 /* End PBXBuildFile section */
 
@@ -14,9 +16,22 @@
 		71582C232F653866004EE74A /* FogMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FogMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		712CFB1B2F6928EC009B20F9 /* Exceptions for "FogMap" folder in "FogMap" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 71582C222F653866004EE74A /* FogMap */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		71582C252F653866004EE74A /* FogMap */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				712CFB1B2F6928EC009B20F9 /* Exceptions for "FogMap" folder in "FogMap" target */,
+			);
 			path = FogMap;
 			sourceTree = "<group>";
 		};
@@ -27,7 +42,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				712CFB202F692A12009B20F9 /* GoogleSignInSwift in Frameworks */,
 				718696F02F690C0D005BBE63 /* FirebaseAuth in Frameworks */,
+				712CFB1E2F692A12009B20F9 /* GoogleSignIn in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +88,8 @@
 			name = FogMap;
 			packageProductDependencies = (
 				718696EF2F690C0D005BBE63 /* FirebaseAuth */,
+				712CFB1D2F692A12009B20F9 /* GoogleSignIn */,
+				712CFB1F2F692A12009B20F9 /* GoogleSignInSwift */,
 			);
 			productName = FogMap;
 			productReference = 71582C232F653866004EE74A /* FogMap.app */;
@@ -102,6 +121,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				718696EE2F690C0D005BBE63 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				712CFB1C2F692A12009B20F9 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 71582C242F653866004EE74A /* Products */;
@@ -263,6 +283,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"FogMap/Resources/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FogMap/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "FogMap needs your location to reveal nearby places on the map.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -293,6 +314,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"FogMap/Resources/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FogMap/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "FogMap needs your location to reveal nearby places on the map.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -337,6 +359,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		712CFB1C2F692A12009B20F9 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.1.0;
+			};
+		};
 		718696EE2F690C0D005BBE63 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -348,6 +378,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		712CFB1D2F692A12009B20F9 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 712CFB1C2F692A12009B20F9 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		712CFB1F2F692A12009B20F9 /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 712CFB1C2F692A12009B20F9 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
+		};
 		718696EF2F690C0D005BBE63 /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 718696EE2F690C0D005BBE63 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

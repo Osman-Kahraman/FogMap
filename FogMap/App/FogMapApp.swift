@@ -7,6 +7,7 @@
 
 import SwiftUI
 import FirebaseCore
+import GoogleSignIn
 
 @main
 struct FogMapApp: App {
@@ -19,13 +20,17 @@ struct FogMapApp: App {
     var body: some Scene {
 
         WindowGroup {
-
-            if authManager.isLoggedIn {
-                ContentView()
-                    .environmentObject(authManager)
-            } else {
-                LoginView()
-                    .environmentObject(authManager)
+            Group {
+                if authManager.isLoggedIn {
+                    ContentView()
+                        .environmentObject(authManager)
+                } else {
+                    LoginView()
+                        .environmentObject(authManager)
+                }
+            }
+            .onOpenURL { url in
+                GIDSignIn.sharedInstance.handle(url)
             }
         }
     }
