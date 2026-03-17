@@ -11,6 +11,8 @@ import FirebaseAuth
 import FirebaseCore
 import GoogleSignIn
 import UIKit
+import AuthenticationServices
+import CryptoKit
 
 class AuthManager: ObservableObject {
 
@@ -76,6 +78,57 @@ class AuthManager: ObservableObject {
         )
 
         let authResult = try await Auth.auth().signIn(with: credential)
+
+        DispatchQueue.main.async {
+            self.isLoggedIn = true
+        }
+    }
+    
+    func randomNonceString(length: Int = 32) -> String {
+        let charset: [Character] =
+        Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
+
+        var result = ""
+        var remainingLength = length
+
+        while remainingLength > 0 {
+            let randoms: [UInt8] = (0 ..< 16).map { _ in UInt8.random(in: 0...255) }
+
+            randoms.forEach { random in
+                if remainingLength == 0 { return }
+
+                if random < charset.count {
+                    result.append(charset[Int(random)])
+                    remainingLength -= 1
+                }
+            }
+        }
+
+        return result
+    }
+    
+    func sha256(_ input: String) -> String {
+        let inputData = Data(input.utf8)
+        let hashedData = SHA256.hash(data: inputData)
+        return hashedData.compactMap { String(format: "%02x", $0) }.joined()
+    }
+    
+    func signInWithApple(credential: ASAuthorizationAppleIDCredential, nonce: String) async throws {
+        guard let appleIDToken = credential.identityToken else {
+            throw NSError(domain: "AppleLogin", code: -1)
+        }
+
+        guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
+            throw NSError(domain: "AppleLogin", code: -1)
+        }
+
+        let firebaseCredential = OAuthProvider.credential(
+            providerID: AuthProviderID.apple,
+            idToken: idTokenString,
+            rawNonce: nonce
+        )
+
+        let _ = try await Auth.auth().signIn(with: firebaseCredential)
 
         DispatchQueue.main.async {
             self.isLoggedIn = true

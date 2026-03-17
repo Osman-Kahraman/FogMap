@@ -6,12 +6,14 @@
 //
 
 import SwiftUI
+import AuthenticationServices
 
 struct LoginView: View {
     @EnvironmentObject var authManager: AuthManager
     @State private var email = ""
     @State private var password = ""
     @State private var showSignup = false
+    @State private var currentNonce: String?
 
 var body: some View {
 
@@ -87,17 +89,41 @@ var body: some View {
             // Social login
             HStack(spacing: 20) {
 
-                Button {
-                    // Apple login
-                } label: {
+                SignInWithAppleButton(
+                    .signIn,
+                    onRequest: { request in
 
-                    Label("Apple", systemImage: "applelogo")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.primary)
-                        .foregroundColor(Color(.systemBackground))
-                        .cornerRadius(10)
-                }
+                        let nonce = authManager.randomNonceString()
+                        currentNonce = nonce
+
+                        request.requestedScopes = [.fullName, .email]
+                        request.nonce = authManager.sha256(nonce)
+                    },
+                    onCompletion: { result in
+
+                        switch result {
+
+                        case .success(let authResults):
+
+                            guard let appleIDCredential =
+                                authResults.credential as? ASAuthorizationAppleIDCredential else { return }
+
+                            guard let nonce = currentNonce else { return }
+
+                            Task {
+                                try? await authManager.signInWithApple(
+                                    credential: appleIDCredential,
+                                    nonce: nonce
+                                )
+                            }
+
+                        case .failure(let error):
+                            print(error)
+                        }
+                    }
+                )
+                .frame(height: 50)
+                .signInWithAppleButtonStyle(.black)
 
                 Button {
                     Task {
