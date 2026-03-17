@@ -6,9 +6,15 @@
 //
 
 import SwiftUI
+import FirebaseAuth
+import FirebaseFirestore
 
 struct PassportView: View {
     @EnvironmentObject var authManager: AuthManager
+    
+    @State private var firstName: String = ""
+    @State private var lastName: String = ""
+    @State private var nationality: String = ""
     
     var body: some View {
 
@@ -44,21 +50,21 @@ struct PassportView: View {
                                 .font(.caption)
                                 .foregroundColor(.secondary)
 
-                            Text("Osman")
+                            Text(firstName.isEmpty ? "—" : firstName)
                                 .font(.headline)
 
                             Text("Surname")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
 
-                            Text("Kahraman")
+                            Text(lastName.isEmpty ? "—" : lastName)
                                 .font(.headline)
 
                             Text("Nationality")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
 
-                            Text("Turkish")
+                            Text(nationality.isEmpty ? "—" : nationality)
                                 .font(.headline)
                         }
 
@@ -120,6 +126,18 @@ struct PassportView: View {
             }
         }
         .navigationTitle("Passport")
+        .task {
+            guard let uid = Auth.auth().currentUser?.uid else { return }
+
+            let db = Firestore.firestore()
+            let doc = try? await db.collection("users").document(uid).getDocument()
+
+            if let data = doc?.data() {
+                firstName = data["firstName"] as? String ?? ""
+                lastName = data["lastName"] as? String ?? ""
+                nationality = data["nationality"] as? String ?? ""
+            }
+        }
     }
 }
 
