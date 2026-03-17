@@ -1,6 +1,6 @@
 //
-//  FogMapApp.swift
-//  FogMap
+//  FoggyMapApp.swift
+//  FoggyMap
 //
 //  Created by Osman Kahraman on 2026-03-14.
 //

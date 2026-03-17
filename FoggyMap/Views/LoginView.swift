@@ -1,6 +1,6 @@
 //
 //  LoginView.swift
-//  FogMap
+//  FoggyMap
 //
 //  Created by Osman Kahraman on 2026-03-16.
 //
@@ -27,7 +27,7 @@ struct LoginView: View {
                     .font(.system(size: 60))
                     .foregroundColor(.blue)
 
-                Text("FogMap")
+                Text("FoggyMap")
                     .font(.largeTitle)
                     .fontWeight(.bold)
 

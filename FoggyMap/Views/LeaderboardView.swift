@@ -1,6 +1,6 @@
 //
 //  LeaderboardView.swift
-//  FogMap
+//  FoggyMap
 //
 //  Created by Osman Kahraman on 2026-03-16.
 //

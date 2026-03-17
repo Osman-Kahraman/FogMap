@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		71582C232F653866004EE74A /* FogMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FogMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		71582C232F653866004EE74A /* FoggyMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FoggyMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		71582C252F653866004EE74A /* FogMap */ = {
+		71582C252F653866004EE74A /* FoggyMap */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = FogMap;
+			path = FoggyMap;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -32,7 +32,7 @@
 		71582C1A2F653866004EE74A = {
 			isa = PBXGroup;
 			children = (
-				71582C252F653866004EE74A /* FogMap */,
+				71582C252F653866004EE74A /* FoggyMap */,
 				71582C242F653866004EE74A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -40,7 +40,7 @@
 		71582C242F653866004EE74A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				71582C232F653866004EE74A /* FogMap.app */,
+				71582C232F653866004EE74A /* FoggyMap.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,9 +48,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		71582C222F653866004EE74A /* FogMap */ = {
+		71582C222F653866004EE74A /* FoggyMap */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 71582C312F653867004EE74A /* Build configuration list for PBXNativeTarget "FogMap" */;
+			buildConfigurationList = 71582C312F653867004EE74A /* Build configuration list for PBXNativeTarget "FoggyMap" */;
 			buildPhases = (
 				71582C1F2F653866004EE74A /* Sources */,
 				71582C202F653866004EE74A /* Frameworks */,
@@ -61,13 +61,13 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				71582C252F653866004EE74A /* FogMap */,
+				71582C252F653866004EE74A /* FoggyMap */,
 			);
-			name = FogMap;
+			name = FoggyMap;
 			packageProductDependencies = (
 			);
 			productName = FogMap;
-			productReference = 71582C232F653866004EE74A /* FogMap.app */;
+			productReference = 71582C232F653866004EE74A /* FoggyMap.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -85,7 +85,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 71582C1E2F653866004EE74A /* Build configuration list for PBXProject "FogMap" */;
+			buildConfigurationList = 71582C1E2F653866004EE74A /* Build configuration list for PBXProject "FoggyMap" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -99,7 +99,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				71582C222F653866004EE74A /* FogMap */,
+				71582C222F653866004EE74A /* FoggyMap */,
 			);
 		};
 /* End PBXProject section */
@@ -251,7 +251,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"FogMap/Resources/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"FoggyMap/Resources/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
@@ -281,7 +281,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"FogMap/Resources/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"FoggyMap/Resources/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
@@ -307,7 +307,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		71582C1E2F653866004EE74A /* Build configuration list for PBXProject "FogMap" */ = {
+		71582C1E2F653866004EE74A /* Build configuration list for PBXProject "FoggyMap" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				71582C2F2F653867004EE74A /* Debug */,
@@ -316,7 +316,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		71582C312F653867004EE74A /* Build configuration list for PBXNativeTarget "FogMap" */ = {
+		71582C312F653867004EE74A /* Build configuration list for PBXNativeTarget "FoggyMap" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				71582C322F653867004EE74A /* Debug */,
