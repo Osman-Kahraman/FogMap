@@ -14,6 +14,8 @@ struct LoginView: View {
     @State private var password = ""
     @State private var showSignup = false
     @State private var currentNonce: String?
+    @State private var showError = false
+    @State private var errorMessage = ""
 
 var body: some View {
 
@@ -58,7 +60,12 @@ var body: some View {
             Button {
 
                 Task {
-                    try? await authManager.login(email: email, password: password)
+                    do {
+                        try await authManager.login(email: email, password: password)
+                    } catch {
+                        errorMessage = "Invalid email or password. Please try again."
+                        showError = true
+                    }
                 }
 
             } label: {
@@ -170,6 +177,11 @@ var body: some View {
             }
 
             Spacer()
+        }
+        .alert("Login Error", isPresented: $showError) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(errorMessage)
         }
     }
     }
