@@ -17,37 +17,35 @@ class AuthManager: ObservableObject {
 
     private var authStateListener: AuthStateDidChangeListenerHandle?
 
-    @Published var isLoggedIn: Bool = Auth.auth().currentUser != nil
+    @Published var isLoggedIn: Bool = false
 
     init() {
         authStateListener = Auth.auth().addStateDidChangeListener { [weak self] _, user in
             DispatchQueue.main.async {
-                self?.isLoggedIn = (user != nil)
+                if user != nil {
+                    self?.isLoggedIn = true
+                } else {
+                    self?.isLoggedIn = false
+                }
             }
         }
     }
 
     func login(email: String, password: String) async throws {
         _ = try await Auth.auth().signIn(withEmail: email, password: password)
-
-        DispatchQueue.main.async {
-            self.isLoggedIn = true
-        }
     }
     
     func createAccount(email: String, password: String) async throws {
         _ = try await Auth.auth().createUser(withEmail: email, password: password)
-
-        DispatchQueue.main.async {
-            self.isLoggedIn = true
-        }
     }
 
     func logout() throws {
+        // Sign out from Firebase
         try Auth.auth().signOut()
-        DispatchQueue.main.async {
-            self.isLoggedIn = false
-        }
+
+        // Clear any Google session
+        GIDSignIn.sharedInstance.signOut()
+        GIDSignIn.sharedInstance.disconnect()
     }
     
     func signInWithGoogle() async throws {
@@ -77,10 +75,6 @@ class AuthManager: ObservableObject {
         )
 
         let authResult = try await Auth.auth().signIn(with: credential)
-
-        DispatchQueue.main.async {
-            self.isLoggedIn = true
-        }
     }
     
     func randomNonceString(length: Int = 32) -> String {
@@ -128,9 +122,5 @@ class AuthManager: ObservableObject {
         )
 
         let _ = try await Auth.auth().signIn(with: firebaseCredential)
-
-        DispatchQueue.main.async {
-            self.isLoggedIn = true
-        }
     }
 }

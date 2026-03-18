@@ -38,7 +38,11 @@ struct PassportView: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
                             Button("Logout") {
-                                authManager.isLoggedIn = false
+                                do {
+                                    try authManager.logout()
+                                } catch {
+                                    print("Logout failed:", error)
+                                }
                             }
                             .font(.caption)
                             .foregroundColor(.red)
