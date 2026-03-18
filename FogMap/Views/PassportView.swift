@@ -11,10 +11,24 @@ import FirebaseFirestore
 
 struct PassportView: View {
     @EnvironmentObject var authManager: AuthManager
+    @Environment(\.colorScheme) var colorScheme
     
     @State private var firstName: String = ""
     @State private var lastName: String = ""
     @State private var nationality: String = ""
+    @State private var visitedCountries: [String] = []
+    
+    init(
+        firstName: String = "",
+        lastName: String = "",
+        nationality: String = "",
+        visitedCountries: [String] = []
+    ) {
+        _firstName = State(initialValue: firstName)
+        _lastName = State(initialValue: lastName)
+        _nationality = State(initialValue: nationality)
+        _visitedCountries = State(initialValue: visitedCountries)
+    }
     
     var body: some View {
 
@@ -105,17 +119,42 @@ struct PassportView: View {
                     Text("Visited Countries")
                         .font(.headline)
 
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 4), spacing: 12) {
-
-                        ForEach(0..<12) { _ in
-                            ZStack {
-                                Circle()
-                                    .stroke(Color.blue.opacity(0.6), lineWidth: 2)
-                                    .frame(width: 50, height: 50)
-
-                                Image(systemName: "globe.europe.africa.fill")
-                                    .font(.system(size: 16))
-                                    .foregroundColor(.blue)
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 16) {
+                        
+                        ForEach(visitedCountries, id: \.self) { country in
+                            VStack(spacing: 6) {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(Color.gray, lineWidth: 2)
+                                        .frame(width: 120, height: 80)
+                                    
+                                    VStack {
+                                        Text(country)
+                                            .font(.caption)
+                                            .foregroundColor(.primary)
+                                        
+                                        Text(flagEmoji(for: country))
+                                            .font(.system(size: 55))
+                                    }
+                                    
+                                    HStack {
+                                        Spacer()
+                                        
+                                        VStack {
+                                            Spacer()
+                                            
+                                            Image(systemName: "checkmark.circle.fill")
+                                                .font(.system(size: 35))
+                                                .foregroundColor(.green)
+                                                .padding(4)
+                                                .background(
+                                                    Circle()
+                                                        .fill(colorScheme == .dark ? Color.black : Color.white)
+                                                        .stroke(.green)
+                                                )
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -126,7 +165,6 @@ struct PassportView: View {
                         .fill(.ultraThinMaterial)
                         .shadow(radius: 8)
                 )
-                .padding()
             }
         }
         .navigationTitle("Passport")
@@ -140,11 +178,31 @@ struct PassportView: View {
                 firstName = data["firstName"] as? String ?? ""
                 lastName = data["lastName"] as? String ?? ""
                 nationality = data["nationality"] as? String ?? ""
+                visitedCountries = data["visitedCountries"] as? [String] ?? []
             }
         }
+    }
+    
+    func flagEmoji(for country: String) -> String {
+        let locale = Locale.current
+
+        guard let region = Locale.Region.isoRegions.first(where: {
+            locale.localizedString(forRegionCode: $0.identifier) == country
+        }) else {
+            return "🌍"
+        }
+
+        let code = region.identifier
+
+        return code
+            .uppercased()
+            .unicodeScalars
+            .compactMap { UnicodeScalar(127397 + $0.value) }
+            .map { String($0) }
+            .joined()
     }
 }
 
 #Preview {
-    PassportView()
+    PassportView(firstName: "Osman", lastName: "Kahraman", nationality: "Turkish", visitedCountries: ["Canada", "Turkey", "Japan", "Germany"])
 }

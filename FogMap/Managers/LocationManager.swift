@@ -7,6 +7,8 @@
 
 
 import CoreLocation
+import FirebaseAuth
+import FirebaseFirestore
 
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
@@ -17,6 +19,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     var onSignificantLocationUpdate: ((CLLocation) -> Void)?
     private let distanceThreshold: CLLocationDistance = 500
     private let countryDetector = CountryDetector()
+    private var visitedCountries: Set<String> = []
+    private let db = Firestore.firestore()
 
     override init() {
         super.init()
@@ -50,8 +54,29 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         // Detect country (async)
         Task {
             if let country = await countryDetector.getCountry(from: newLocation) {
-                print("🌍 Detected country:", country)
+                // Avoid duplicates
+                if !visitedCountries.contains(country) {
+                    visitedCountries.insert(country)
+
+                    // Sync with Firestore
+                    await saveVisitedCountries()
+                }
             }
+        }
+    }
+    
+    @MainActor
+    func saveVisitedCountries() async {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+
+        do {
+            try await db.collection("users")
+                .document(uid)
+                .setData([
+                    "visitedCountries": Array(visitedCountries)
+                ], merge: true)
+        } catch {
+            print("Firestore save error:", error)
         }
     }
 }
