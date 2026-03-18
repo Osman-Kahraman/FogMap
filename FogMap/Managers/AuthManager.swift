@@ -74,7 +74,7 @@ class AuthManager: ObservableObject {
             accessToken: result.user.accessToken.tokenString
         )
 
-        let authResult = try await Auth.auth().signIn(with: credential)
+        let _ = try await Auth.auth().signIn(with: credential)
     }
     
     func randomNonceString(length: Int = 32) -> String {
