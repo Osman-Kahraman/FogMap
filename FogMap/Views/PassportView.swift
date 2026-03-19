@@ -17,6 +17,7 @@ struct PassportView: View {
     @State private var lastName: String = ""
     @State private var nationality: String = ""
     @State private var visitedCountries: [String] = []
+    @State private var newlyUnlocked: Set<String> = []
     
     init(
         firstName: String = "",
@@ -122,31 +123,35 @@ struct PassportView: View {
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 16) {
                         
                         ForEach(visitedCountries, id: \.self) { country in
+                            let isNew = newlyUnlocked.contains(country)
+
                             VStack(spacing: 6) {
                                 ZStack {
                                     RoundedRectangle(cornerRadius: 10)
                                         .stroke(Color.gray, lineWidth: 2)
                                         .frame(width: 120, height: 80)
-                                    
+
                                     VStack {
                                         Text(country)
                                             .font(.caption)
                                             .foregroundColor(.primary)
-                                        
+
                                         Text(flagEmoji(for: country))
                                             .font(.system(size: 55))
                                     }
                                     
                                     HStack {
                                         Spacer()
-                                        
                                         VStack {
                                             Spacer()
-                                            
+
                                             Image(systemName: "checkmark.circle.fill")
                                                 .font(.system(size: 35))
                                                 .foregroundColor(.green)
                                                 .padding(4)
+                                                .scaleEffect(isNew ? 2 : 1)
+                                                .opacity(isNew ? 1 : 0.8)
+                                                .animation(.spring(), value: isNew)
                                                 .background(
                                                     Circle()
                                                         .fill(colorScheme == .dark ? Color.black : Color.white)
@@ -175,10 +180,16 @@ struct PassportView: View {
             let doc = try? await db.collection("users").document(uid).getDocument()
 
             if let data = doc?.data() {
-                firstName = data["firstName"] as? String ?? ""
-                lastName = data["lastName"] as? String ?? ""
-                nationality = data["nationality"] as? String ?? ""
-                visitedCountries = data["visitedCountries"] as? [String] ?? []
+                let newCountries = data["visitedCountries"] as? [String] ?? []
+
+                let diff = Set(newCountries).subtracting(visitedCountries)
+
+                visitedCountries = newCountries
+                newlyUnlocked = diff
+
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    newlyUnlocked.removeAll()
+                }
             }
         }
     }
@@ -204,5 +215,5 @@ struct PassportView: View {
 }
 
 #Preview {
-    PassportView(firstName: "Osman", lastName: "Kahraman", nationality: "Turkish", visitedCountries: ["Canada", "Turkey", "Japan", "Germany"])
+    PassportView(firstName: "Osman", lastName: "Kahraman", nationality: "Turkish", visitedCountries: ["Canada", "Türkiye", "Japan", "Germany"])
 }
