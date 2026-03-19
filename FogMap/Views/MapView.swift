@@ -10,7 +10,6 @@ import SwiftUI
 import MapKit
 
 struct MapTabView: View {
-
     @ObservedObject var locationManager: LocationManager
     @Binding var recenterMap: Bool
 

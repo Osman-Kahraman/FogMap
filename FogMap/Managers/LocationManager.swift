@@ -5,13 +5,11 @@
 //  Created by Osman Kahraman on 2026-03-14.
 //
 
-
 import CoreLocation
 import FirebaseAuth
 import FirebaseFirestore
 
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
-
     private let manager = CLLocationManager()
 
     @Published var location: CLLocation?
@@ -19,6 +17,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     var onSignificantLocationUpdate: ((CLLocation) -> Void)?
     private let distanceThreshold: CLLocationDistance = 500
     private let countryDetector = CountryDetector()
+    private let polygonService = CountryPolygonService.shared
     private var visitedCountries: Set<String> = []
     private let db = Firestore.firestore()
 
@@ -53,14 +52,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
         // Detect country (async)
         Task {
-            if let country = await countryDetector.getCountry(from: newLocation) {
-                // Avoid duplicates
-                if !visitedCountries.contains(country) {
-                    visitedCountries.insert(country)
-
-                    // Sync with Firestore
-                    await saveVisitedCountries()
-                }
+            if let country = await CountryService.shared.detectCountry(from: newLocation) {
+                await UserService.shared.addVisitedCountry(country)
             }
         }
     }
@@ -87,6 +80,7 @@ class CountryDetector {
     func getCountry(from location: CLLocation) async -> String? {
         do {
             let placemarks = try await geocoder.reverseGeocodeLocation(location)
+            
             return placemarks.first?.country
         } catch {
             print("Geocoding failed:", error)
