@@ -10,9 +10,19 @@ import SwiftUI
 
 struct LeaderboardView: View {
     var body: some View {
-        VStack {
-            Text("Leaderboard")
-                .font(.largeTitle)
+        NavigationStack {
+            VStack {
+                Spacer()
+                
+                Text("Coming soon after beta testing")
+                    .font(.title2)
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(.secondary)
+                    .padding()
+                
+                Spacer()
+            }
+            .navigationTitle("Leaderboard")
         }
     }
 }

@@ -37,25 +37,21 @@ struct ContentView: View {
             MapTabView(locationManager: locationManager, recenterMap: $recenterMap)
                 .tabItem {
                     Image(systemName: "map.fill")
-                    Text("Map")
                 }
 
             PassportView()
                 .tabItem {
                     Image(systemName: "wallet.pass")
-                    Text("Passport")
                 }
 
             LeaderboardView()
                 .tabItem {
                     Image(systemName: "trophy.fill")
-                    Text("Leaderboard")
                 }
 
             SettingsView()
                 .tabItem {
                     Image(systemName: "gearshape.fill")
-                    Text("Settings")
                 }
         }
         .preferredColorScheme(
