@@ -14,7 +14,6 @@ import AuthenticationServices
 import CryptoKit
 
 class AuthManager: ObservableObject {
-
     private var authStateListener: AuthStateDidChangeListenerHandle?
 
     @Published var isLoggedIn: Bool = false

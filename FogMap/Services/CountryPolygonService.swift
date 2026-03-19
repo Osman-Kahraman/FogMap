@@ -8,13 +8,7 @@
 import Foundation
 import CoreLocation
 
-struct Country {
-    let name: String
-    let polygons: [[CLLocationCoordinate2D]]
-}
-
 class CountryPolygonService {
-
     static let shared = CountryPolygonService()
 
     private(set) var countries: [Country] = []

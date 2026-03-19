@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct SettingsView: View {
-
     enum AppTheme: String, CaseIterable, Identifiable {
         case system = "System"
         case light = "Light"

@@ -10,7 +10,6 @@ import FirebaseAuth
 import FirebaseFirestore
 
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
-
     private let manager = CLLocationManager()
 
     @Published var location: CLLocation?

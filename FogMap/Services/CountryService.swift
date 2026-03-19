@@ -9,7 +9,6 @@ import Foundation
 import CoreLocation
 
 class CountryService {
-
     static let shared = CountryService()
 
     private let geocoder = CLGeocoder()
