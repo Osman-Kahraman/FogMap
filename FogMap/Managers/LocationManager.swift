@@ -20,6 +20,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let polygonService = CountryPolygonService.shared
     private var visitedCountries: Set<String> = []
     private let db = Firestore.firestore()
+    private var lastCloudSync: Date = .distantPast
 
     override init() {
         super.init()
@@ -54,22 +55,17 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         Task {
             if let country = await CountryService.shared.detectCountry(from: newLocation) {
                 await UserService.shared.addVisitedCountry(country)
-            }
-        }
-    }
-    
-    @MainActor
-    func saveVisitedCountries() async {
-        guard let uid = Auth.auth().currentUser?.uid else { return }
+                visitedCountries.insert(country)
 
-        do {
-            try await db.collection("users")
-                .document(uid)
-                .setData([
-                    "visitedCountries": Array(visitedCountries)
-                ], merge: true)
-        } catch {
-            print("Firestore save error:", error)
+                // Throttled iCloud backup (every 30s)
+                let now = Date()
+                if now.timeIntervalSince(lastCloudSync) > 30 {
+                    lastCloudSync = now
+                    await CloudBackupService.shared.saveVisitedCountries(
+                        Array(visitedCountries)
+                    )
+                }
+            }
         }
     }
 }

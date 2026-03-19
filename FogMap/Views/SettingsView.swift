@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CloudKit
 
 struct SettingsView: View {
     enum AppTheme: String, CaseIterable, Identifiable {
@@ -43,14 +44,28 @@ struct SettingsView: View {
                         .disabled(!iCloudEnabled)
 
                     Button("Backup Now") {
-                        // simulate backup
-                        lastBackupDate = Date()
-                        backupSize = "2.3 MB"
+                        Task {
+                            // You should replace this with real data source later
+                            let sampleCountries = ["Canada", "Turkey", "Japan"]
+
+                            await CloudBackupService.shared.saveVisitedCountries(sampleCountries)
+
+                            lastBackupDate = Date()
+                            backupSize = "\(sampleCountries.count) countries"
+                        }
                     }
                     .disabled(!iCloudEnabled)
 
                     Button("Restore from iCloud") {
-                        // future restore logic
+                        print("It will be added one I pay Apple Developer account...")
+                        /*Task {
+                            if let countries = await CloudBackupService.shared.fetchBackup() {
+                                print("Restored countries:", countries)
+
+                                lastBackupDate = Date()
+                                backupSize = "\(countries.count) countries"
+                            }
+                        }*/
                     }
                     .disabled(!iCloudEnabled)
 
