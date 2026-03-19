@@ -74,6 +74,22 @@ class AuthManager: ObservableObject {
         )
 
         let _ = try await Auth.auth().signIn(with: credential)
+
+        guard let user = Auth.auth().currentUser else { return }
+
+        let fullName = user.displayName ?? ""
+        let components = fullName.split(separator: " ")
+
+        let firstName = components.first.map(String.init) ?? ""
+        let lastName = components.dropFirst().joined(separator: " ")
+
+        await UserService.shared.createUserIfNeeded(
+            uid: user.uid,
+            email: user.email ?? "",
+            firstName: firstName,
+            lastName: lastName,
+            nationality: "Google"
+        )
     }
     
     func randomNonceString(length: Int = 32) -> String {
@@ -121,5 +137,15 @@ class AuthManager: ObservableObject {
         )
 
         let _ = try await Auth.auth().signIn(with: firebaseCredential)
+
+        guard let user = Auth.auth().currentUser else { return }
+
+        await UserService.shared.createUserIfNeeded(
+            uid: user.uid,
+            email: user.email ?? "",
+            firstName: credential.fullName?.givenName ?? "",
+            lastName: credential.fullName?.familyName ?? "",
+            nationality: "Apple"
+        )
     }
 }
