@@ -5,7 +5,6 @@
 //  Created by Osman Kahraman on 2026-03-14.
 //
 
-
 import CoreLocation
 import FirebaseAuth
 import FirebaseFirestore
@@ -54,24 +53,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
         // Detect country (async)
         Task {
-            var detectedCountry: String?
-
-            // 1. Try CLGeocoder
-            detectedCountry = await countryDetector.getCountry(from: newLocation)
-
-            // 2. Fallback to polygon if needed
-            if detectedCountry == nil {
-                detectedCountry = polygonService.detectCountry(for: newLocation.coordinate)
-            }
-
-            guard let country = detectedCountry else { return }
-
-            // Avoid duplicates
-            if !visitedCountries.contains(country) {
-                visitedCountries.insert(country)
-
-                // Sync with Firestore
-                await saveVisitedCountries()
+            if let country = await CountryService.shared.detectCountry(from: newLocation) {
+                await UserService.shared.addVisitedCountry(country)
             }
         }
     }

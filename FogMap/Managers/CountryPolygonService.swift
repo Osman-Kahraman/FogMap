@@ -5,7 +5,6 @@
 //  Created by Osman Kahraman on 2026-03-18.
 //
 
-
 import Foundation
 import CoreLocation
 
@@ -29,7 +28,7 @@ class CountryPolygonService {
               let data = try? Data(contentsOf: url),
               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
               let features = json["features"] as? [[String: Any]] else {
-            print("❌ Failed to load countries.geojson")
+            print("Failed to load countries.geojson")
             return
         }
 
