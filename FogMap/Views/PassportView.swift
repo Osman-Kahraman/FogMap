@@ -227,5 +227,5 @@ struct PassportView: View {
 }
 
 #Preview {
-    PassportView(firstName: "Osman", lastName: "Kahraman", nationality: "Turkish", visitedCountries: ["Canada", "Türkiye", "Japan", "Germany"])
+    PassportView(firstName: "Osman", lastName: "Kahraman", nationality: "Turkish", visitedCountries: ["United States", "Türkiye", "Japan", "Germany"])
 }

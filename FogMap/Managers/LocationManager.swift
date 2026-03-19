@@ -19,6 +19,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     var onSignificantLocationUpdate: ((CLLocation) -> Void)?
     private let distanceThreshold: CLLocationDistance = 500
     private let countryDetector = CountryDetector()
+    private let polygonService = CountryPolygonService.shared
     private var visitedCountries: Set<String> = []
     private let db = Firestore.firestore()
 
@@ -53,14 +54,24 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
         // Detect country (async)
         Task {
-            if let country = await countryDetector.getCountry(from: newLocation) {
-                // Avoid duplicates
-                if !visitedCountries.contains(country) {
-                    visitedCountries.insert(country)
+            var detectedCountry: String?
 
-                    // Sync with Firestore
-                    await saveVisitedCountries()
-                }
+            // 1. Try CLGeocoder
+            detectedCountry = await countryDetector.getCountry(from: newLocation)
+
+            // 2. Fallback to polygon if needed
+            if detectedCountry == nil {
+                detectedCountry = polygonService.detectCountry(for: newLocation.coordinate)
+            }
+
+            guard let country = detectedCountry else { return }
+
+            // Avoid duplicates
+            if !visitedCountries.contains(country) {
+                visitedCountries.insert(country)
+
+                // Sync with Firestore
+                await saveVisitedCountries()
             }
         }
     }
@@ -87,6 +98,7 @@ class CountryDetector {
     func getCountry(from location: CLLocation) async -> String? {
         do {
             let placemarks = try await geocoder.reverseGeocodeLocation(location)
+            
             return placemarks.first?.country
         } catch {
             print("Geocoding failed:", error)
