@@ -43,11 +43,10 @@ struct PassportView: View {
 
                         // Profile Photo + Logout
                         VStack(spacing: 8) {
-
-                            Image(systemName: "person.crop.square.fill")
+                            Image("pp_default")
                                 .resizable()
                                 .scaledToFill()
-                                .frame(width: 90, height: 90)
+                                .frame(width: 140, height: 140)
                                 .foregroundColor(.gray)
                                 .background(Color.gray.opacity(0.2))
                                 .clipShape(RoundedRectangle(cornerRadius: 8))
