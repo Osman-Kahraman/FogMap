@@ -180,12 +180,24 @@ struct PassportView: View {
             let doc = try? await db.collection("users").document(uid).getDocument()
 
             if let data = doc?.data() {
+                firstName = data["firstName"] as? String ?? ""
+                lastName = data["lastName"] as? String ?? ""
+                nationality = data["nationality"] as? String ?? ""
+                
                 let newCountries = data["visitedCountries"] as? [String] ?? []
 
-                let diff = Set(newCountries).subtracting(visitedCountries)
+                // Preventing first load of visitedCountries can be empty
+                if visitedCountries.isEmpty {
+                    visitedCountries = newCountries
+                } else {
+                    let diff = Set(newCountries).subtracting(visitedCountries)
+                    visitedCountries = newCountries
+                    newlyUnlocked = diff
 
-                visitedCountries = newCountries
-                newlyUnlocked = diff
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        newlyUnlocked.removeAll()
+                    }
+                }
 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     newlyUnlocked.removeAll()
