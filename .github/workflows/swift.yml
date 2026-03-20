@@ -1,11 +1,8 @@
-# This workflow will build a Swift project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-swift
-
 name: iOS CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, develop ]
   pull_request:
     branches: [ main ]
 
@@ -18,14 +15,18 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Select Xcode
-        run: sudo xcode-select -switch /Applications/Xcode.app
+        run: sudo xcode-select -s /Applications/Xcode.app
 
       - name: Show Xcode version
         run: xcodebuild -version
 
-      - name: Build
+      - name: Resolve Swift Packages
+        run: xcodebuild -resolvePackageDependencies
+
+      - name: Build app
         run: |
-          xcodebuild \
-          -scheme _gitinder \
+          xcodebuild clean build \
+          -project FogMap.xcodeproj \
+          -scheme FogMap \
           -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
-          clean build
+          CODE_SIGNING_ALLOWED=NO
