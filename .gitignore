@@ -1,2 +1,5 @@
+.DS_Store
+.vscode/
+.idea/
 # Firebase
-FogMap/Resources/GoogleService-Info.plist
+GoogleService-Info.plist
