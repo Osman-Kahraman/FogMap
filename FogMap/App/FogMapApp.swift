@@ -12,6 +12,7 @@ import GoogleSignIn
 @main
 struct FogMapApp: App {
     @StateObject var authManager = AuthManager()
+    @AppStorage("appTheme") private var appTheme: String = "Dark"
 
     init() {
         FirebaseApp.configure()
@@ -32,7 +33,12 @@ struct FogMapApp: App {
             .onOpenURL { url in
                 GIDSignIn.sharedInstance.handle(url)
             }
-            .preferredColorScheme(.dark)
+            .preferredColorScheme(
+                appTheme == "Dark" ? .dark :
+                appTheme == "Light" ? .light :
+                nil
+            )
+
         }
     }
 }

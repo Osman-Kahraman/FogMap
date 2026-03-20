@@ -9,14 +9,20 @@ import SwiftUI
 import MapKit
 
 struct ContentView: View {
-
+    @Environment(\.colorScheme) var colorScheme
     @StateObject var locationManager = LocationManager()
     @State private var recenterMap = false
+    @State private var selectedTab: Int = 0
     @AppStorage("appTheme") private var appTheme: String = "Dark"
 
-    init() {
+    func updateTabBarAppearance() {
         let appearance = UITabBarAppearance()
         appearance.configureWithTransparentBackground()
+        if appTheme == "Dark" {
+            appearance.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+        } else {
+            appearance.backgroundColor = UIColor.white.withAlphaComponent(0.4)
+        }
 
         // Unselected items (normal)
         appearance.stackedLayoutAppearance.normal.iconColor = UIColor.secondaryLabel
@@ -32,33 +38,39 @@ struct ContentView: View {
 
     var body: some View {
 
-        TabView {
+        TabView(selection: $selectedTab) {
 
             MapTabView(locationManager: locationManager, recenterMap: $recenterMap)
                 .tabItem {
                     Image(systemName: "map.fill")
                 }
+                .tag(0)
 
             PassportView()
                 .tabItem {
                     Image(systemName: "wallet.pass")
                 }
+                .tag(1)
 
             LeaderboardView()
                 .tabItem {
                     Image(systemName: "trophy.fill")
                 }
+                .tag(2)
 
             SettingsView()
                 .tabItem {
                     Image(systemName: "gearshape.fill")
                 }
+                .tag(3)
         }
-        .preferredColorScheme(
-            appTheme == "Dark" ? .dark :
-            appTheme == "Light" ? .light :
-            nil
-        )
+        .id(appTheme)
+        .onAppear {
+            updateTabBarAppearance()
+        }
+        .onChange(of: appTheme) {
+            updateTabBarAppearance()
+        }
     }
 }
 

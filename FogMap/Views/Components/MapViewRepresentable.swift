@@ -12,6 +12,7 @@ struct MapViewRepresentable: UIViewRepresentable {
 
     @ObservedObject var locationManager: LocationManager
     @Binding var recenter: Bool
+    @AppStorage("mapStyle") private var mapStyle: String = "Standard"
     static var exploredCoordinates: [CLLocationCoordinate2D] = []
     // Grid system to estimate explored world percentage
     static var visitedTiles: Set<String> = []
@@ -50,7 +51,6 @@ struct MapViewRepresentable: UIViewRepresentable {
         let mapView = MKMapView()
         // Force the map to use dark mode appearance
         mapView.overrideUserInterfaceStyle = .dark
-        mapView.mapType = .standard
         mapView.showsUserLocation = true
         mapView.showsCompass = true
         // Use the explicit API so the heading arrow appears reliably
@@ -83,6 +83,12 @@ struct MapViewRepresentable: UIViewRepresentable {
     func updateUIView(_ mapView: MKMapView, context: Context) {
 
         guard let location = locationManager.location else { return }
+
+        if mapStyle == "Satellite" {
+            mapView.mapType = .satellite
+        } else {
+            mapView.mapType = .standard
+        }
 
         let coordinate = location.coordinate
 
@@ -169,6 +175,7 @@ class GlobalFogOverlay: NSObject, MKOverlay {
 }
 
 class GlobalFogRenderer: MKOverlayRenderer {
+    @AppStorage("fogOpacity") private var fogOpacity: Double = 0.8
 
     lazy var maskImage: CGImage? = { () -> CGImage? in
 
@@ -199,7 +206,7 @@ class GlobalFogRenderer: MKOverlayRenderer {
 
         // Draw fog with high transparency (≈80% transparent)
         context.saveGState()
-        context.setAlpha(0.8)
+        context.setAlpha(fogOpacity)
 
         if let fog = fogTexture {
             context.draw(fog, in: rect)

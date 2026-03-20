@@ -18,6 +18,8 @@ struct SettingsView: View {
     }
 
     @AppStorage("appTheme") private var appTheme: String = AppTheme.system.rawValue
+    @AppStorage("fogOpacity") private var fogOpacity: Double = 0.8
+    @AppStorage("mapStyle") private var mapStyle: String = "Standard"
     @State private var iCloudEnabled = false
     @State private var iCloudAutoSync = true
     @State private var lastBackupDate: Date? = nil
@@ -32,6 +34,22 @@ struct SettingsView: View {
                     Picker("App Theme", selection: $appTheme) {
                         ForEach(AppTheme.allCases) { theme in
                             Text(theme.rawValue).tag(theme.rawValue)
+                        }
+                    }
+                }
+                
+                Section(header: Text("Map Settings")) {
+
+                    Picker("Map Style", selection: $mapStyle) {
+                        Text("Standard").tag("Standard")
+                        Text("Satellite").tag("Satellite")
+                    }
+
+                    VStack(alignment: .leading) {
+                        Text("Fog Opacity")
+                        HStack {
+                            Slider(value: $fogOpacity, in: 0.3...1.0)
+                            Text("\(Int(fogOpacity * 100))%")
                         }
                     }
                 }
@@ -87,6 +105,9 @@ struct SettingsView: View {
                         Text(backupSize)
                             .foregroundColor(.secondary)
                     }
+                }
+                Section(header: Text("About")) {
+                    Text("Version 1.0.0")
                 }
             }
             .navigationTitle("Settings")

@@ -114,9 +114,36 @@ struct PassportView: View {
                         .frame(maxWidth: .infinity)
                         
                         Divider()
-                        
+
+                        // Exploration Stats
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Stats")
+                                .font(.headline)
+                            
+                            VStack {
+                                HStack {
+                                    Text("Countries Visited")
+                                    Spacer()
+                                    Text("\(visitedCountries.count)")
+                                        .font(.system(size: 28, weight: .bold))
+                                        .foregroundColor(.secondary)
+                                }
+
+                                HStack {
+                                    Text("Explored")
+                                    Spacer()
+                                    Text(String(format: "%.5f%%", MapViewRepresentable.exploredPercentage()))
+                                        .font(.system(size: 28, weight: .bold))
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                            .padding(20)
+                        }
+
+                        Divider()
+
                         // Passport Stamps
-                        Text("Visited Countries")
+                        Text("Stamps")
                             .font(.headline)
                         
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 16) {
