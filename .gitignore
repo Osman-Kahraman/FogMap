@@ -3,3 +3,4 @@
 .idea/
 # Firebase
 GoogleService-Info.plist
+.FogMap/GoogleService-Info.plist
