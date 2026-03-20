@@ -136,9 +136,9 @@ Use the official Firebase console to generate the `GoogleService-Info.plist` for
 
 ### Helpful Links
 
-- Firebase iOS setup: `https://firebase.google.com/docs/ios/setup`
-- Google Sign-In (Firebase Auth): `https://firebase.google.com/docs/auth/ios/google-signin`
-- Sign in with Apple (Firebase Auth): `https://firebase.google.com/docs/auth/ios/apple`
+- Firebase iOS setup: [firebase.google.com](https://firebase.google.com/docs/ios/setup)
+- Google Sign-In (Firebase Auth): [firebase.google.com](https://firebase.google.com/docs/auth/ios/google-signin)
+- Sign in with Apple (Firebase Auth): [firebase.google.com](https://firebase.google.com/docs/auth/ios/apple)
 
 ## Documentation
 
