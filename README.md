@@ -20,9 +20,9 @@ It transforms real world movement into a game by letting you unlock the map as y
 No scrolling. No lists.
 Just you and the world.
 
-## Concept
+#### Concept:
 
-FogMap introduces a simple idea:
+FogMap introduces a simple idea.
 
 <p align="center">
   <b>Move → Reveal → Discover</b>
@@ -55,6 +55,18 @@ This creates:
 - Your path reveals the map in real time
 - Countries get added to your personal passport
 
+## Architecture
+
+| Stack                         | What it does?             |
+| ----------------------------- | ------------------------- |
+| `SwiftUI`                     | UI and state management   |
+| `MapKit`                      | map rendering             |
+| `Firebase Auth`               | authentication            |
+| `Firestore`                   | user data                 |
+| `CloudKit`                    | iCloud backup             |
+| `CoreLocation`                | tracking                  |
+| `Custom Polygon Engine (WIP)` | offline country detection |
+
 ## Features
 
 1. Real-time map exploration (MapKit)
@@ -68,17 +80,16 @@ This creates:
 9. Light / Dark theme support
 10. Smooth SwiftUI animations
 
-## Architecture
+## Requirements
 
-| Stack                         | What it does?             |
-| ----------------------------- | ------------------------- |
-| `SwiftUI`                     | UI and state management   |
-| `MapKit`                      | map rendering             |
-| `Firebase Auth`               | authentication            |
-| `Firestore`                   | user data                 |
-| `CloudKit`                    | iCloud backup             |
-| `CoreLocation`                | tracking                  |
-| `Custom Polygon Engine (WIP)` | offline country detection |
+To run **FogMap** locally, you will need:
+
+#### Development Environment
+
+- macOS (latest stable version recommended)
+- Xcode 15+
+- iOS 17+ Simulator or physical device
+- Swift 5.9+
 
 ## Installation
 
@@ -111,23 +122,6 @@ git clone https://github.com/Osman-Kahraman/FogMap.git
 - Enable CloudKit capability in Xcode
 
 ⚠️ **IMPORTANT: It requires Apple Developer account**
-
-## Development Notes
-
-- CLGeocoder used for fast country detection
-- Polygon-based detection planned for offline accuracy
-- Fog system uses coordinate-based reveal tracking
-
-## Requirements
-
-To run **FogMap** locally, you will need:
-
-### Development Environment
-
-- macOS (latest stable version recommended)
-- Xcode 15+
-- iOS 17+ Simulator or physical device
-- Swift 5.9+
 
 ## Documentation
 
