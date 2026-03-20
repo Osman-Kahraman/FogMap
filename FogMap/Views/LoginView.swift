@@ -17,173 +17,222 @@ struct LoginView: View {
     @State private var showError = false
     @State private var errorMessage = ""
 
-var body: some View {
-
-    NavigationStack {
-
-        VStack(spacing: 30) {
-
-            Spacer()
-
-            // Logo
-            VStack(spacing: 10) {
-
-                Image(systemName: "globe.europe.africa.fill")
-                    .font(.system(size: 60))
-                    .foregroundColor(.blue)
-
-                Text("FogMap")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-
-                Text("Explore the world")
-                    .foregroundColor(.secondary)
-            }
-
-            // Inputs
-            VStack(spacing: 16) {
-
-                TextField("Email", text: $email)
-                    .keyboardType(.emailAddress)
-                    .textInputAutocapitalization(.never)
-                    .padding()
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(12)
-
-                SecureField("Password", text: $password)
-                    .padding()
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(12)
-            }
-            .padding(.horizontal)
-
-            Button {
-
-                Task {
-                    do {
-                        try await authManager.login(email: email, password: password)
-                    } catch {
-                        errorMessage = "Invalid email or password. Please try again."
-                        showError = true
-                    }
-                }
-
-            } label: {
-                Text("Login")
-                    .fontWeight(.bold)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.primary)
-                    .foregroundColor(Color(.systemBackground))
-                    .cornerRadius(12)
-            }
-            .padding(.horizontal)
-
-            // Divider
-            HStack {
-                Rectangle()
-                    .frame(height: 1)
-                    .foregroundColor(.gray.opacity(0.3))
-
-                Text("OR")
-
-                Rectangle()
-                    .frame(height: 1)
-                    .foregroundColor(.gray.opacity(0.3))
-            }
-            .padding(.horizontal)
-
-            // Social login
-            HStack(spacing: 20) {
-
-                SignInWithAppleButton(
-                    .signIn,
-                    onRequest: { request in
-
-                        let nonce = authManager.randomNonceString()
-                        currentNonce = nonce
-
-                        request.requestedScopes = [.fullName, .email]
-                        request.nonce = authManager.sha256(nonce)
-                    },
-                    onCompletion: { result in
-
-                        switch result {
-
-                        case .success(let authResults):
-
-                            guard let appleIDCredential =
-                                authResults.credential as? ASAuthorizationAppleIDCredential else { return }
-
-                            guard let nonce = currentNonce else { return }
-
-                            Task {
-                                try? await authManager.signInWithApple(
-                                    credential: appleIDCredential,
-                                    nonce: nonce
-                                )
-                            }
-
-                        case .failure(let error):
-                            print(error)
-                        }
-                    }
-                )
-                .frame(height: 50)
-                .signInWithAppleButtonStyle(.white)
-
-                Button {
-                    Task {
-                        do {
-                            try await authManager.signInWithGoogle()
-                            print("Google login success")
-                        } catch {
-                            print("Google login error:", error)
-                        }
-                    }
-                } label: {
-
-                    HStack(spacing: 8) {
-                        Image("google_favicon")
+    var body: some View {
+        
+        NavigationStack {
+            
+            ZStack {
+                
+                Color.black.ignoresSafeArea()
+                
+                GeometryReader { geo in
+                    
+                    let size = geo.size.width * 0.5
+                    
+                    ZStack {
+                        
+                        // Top Left
+                        Image("fog")
                             .resizable()
-                            .scaledToFit()
-                            .frame(width: 18, height: 18)
-
-                        Text("Google")
+                            .frame(width: size, height: size)
+                            .rotationEffect(.degrees(270))
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                        
+                        // Top Right
+                        Image("fog")
+                            .resizable()
+                            .frame(width: size, height: size)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                        
+                        // Bottom Left
+                        Image("fog")
+                            .resizable()
+                            .frame(width: size, height: size)
+                            .rotationEffect(.degrees(180))
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
+                        
+                        // Bottom Right
+                        Image("fog")
+                            .resizable()
+                            .frame(width: size, height: size)
+                            .rotationEffect(.degrees(90))
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.primary)
-                    .foregroundColor(Color(.systemBackground))
-                    .cornerRadius(10)
+                }
+                .ignoresSafeArea()
+                
+                VStack(spacing: 30) {
+                    
+                    
+                    // Logo
+                    VStack(spacing: 10) {
+                        
+                        Image("icon")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 140, height: 140)
+                            .clipShape(RoundedRectangle(cornerRadius: 34))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 34)
+                                    .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                            )
+                            .shadow(color: Color.white.opacity(0.15), radius: 20, x: 0, y: 10)
+                            .shadow(color: Color.blue.opacity(0.3), radius: 30, x: 0, y: 0)
+                        
+                        
+                        Text("FogMap")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                        
+                        Text("Explore the world")
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    // Inputs
+                    VStack(spacing: 16) {
+                        
+                        TextField("Email", text: $email)
+                            .keyboardType(.emailAddress)
+                            .textInputAutocapitalization(.never)
+                            .padding()
+                            .background(.ultraThinMaterial)
+                            .cornerRadius(12)
+                        
+                        SecureField("Password", text: $password)
+                            .padding()
+                            .background(.ultraThinMaterial)
+                            .cornerRadius(12)
+                    }
+                    .padding(.horizontal)
+                    
+                    Button {
+                        
+                        Task {
+                            do {
+                                try await authManager.login(email: email, password: password)
+                            } catch {
+                                errorMessage = "Invalid email or password. Please try again."
+                                showError = true
+                            }
+                        }
+                        
+                    } label: {
+                        Text("Login")
+                            .fontWeight(.bold)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.primary)
+                            .foregroundColor(Color(.systemBackground))
+                            .cornerRadius(12)
+                    }
+                    .padding(.horizontal)
+                    
+                    // Divider
+                    HStack {
+                        Rectangle()
+                            .frame(height: 1)
+                            .foregroundColor(.gray.opacity(0.3))
+                        
+                        Text("OR")
+                        
+                        Rectangle()
+                            .frame(height: 1)
+                            .foregroundColor(.gray.opacity(0.3))
+                    }
+                    .padding(.horizontal)
+                    
+                    // Social login
+                    HStack(spacing: 20) {
+                        
+                        SignInWithAppleButton(
+                            .signIn,
+                            onRequest: { request in
+                                
+                                let nonce = authManager.randomNonceString()
+                                currentNonce = nonce
+                                
+                                request.requestedScopes = [.fullName, .email]
+                                request.nonce = authManager.sha256(nonce)
+                            },
+                            onCompletion: { result in
+                                
+                                switch result {
+                                    
+                                case .success(let authResults):
+                                    
+                                    guard let appleIDCredential =
+                                            authResults.credential as? ASAuthorizationAppleIDCredential else { return }
+                                    
+                                    guard let nonce = currentNonce else { return }
+                                    
+                                    Task {
+                                        try? await authManager.signInWithApple(
+                                            credential: appleIDCredential,
+                                            nonce: nonce
+                                        )
+                                    }
+                                    
+                                case .failure(let error):
+                                    print(error)
+                                }
+                            }
+                        )
+                        .frame(height: 50)
+                        .signInWithAppleButtonStyle(.white)
+                        
+                        Button {
+                            Task {
+                                do {
+                                    try await authManager.signInWithGoogle()
+                                    print("Google login success")
+                                } catch {
+                                    print("Google login error:", error)
+                                }
+                            }
+                        } label: {
+                            
+                            HStack(spacing: 8) {
+                                Image("google_favicon")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 18, height: 18)
+                                
+                                Text("Google")
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.primary)
+                            .foregroundColor(Color(.systemBackground))
+                            .cornerRadius(10)
+                        }
+                    }
+                    .padding(.horizontal)
+                    
+                    Spacer()
+                    
+                    // Sign up
+                    HStack {
+                        Text("Don't have an account?")
+                        Button("Sign Up") {
+                            showSignup = true
+                        }
+                        .fontWeight(.bold)
+                    }
+                    .sheet(isPresented: $showSignup) {
+                        NavigationStack {
+                            SignupView()
+                        }
+                    }
+                    
+                    Spacer()
+                }
+                .alert("Login Error", isPresented: $showError) {
+                    Button("OK", role: .cancel) { }
+                } message: {
+                    Text(errorMessage)
                 }
             }
-            .padding(.horizontal)
-
-            Spacer()
-
-            // Sign up
-            HStack {
-                Text("Don't have an account?")
-                Button("Sign Up") {
-                    showSignup = true
-                }
-                .fontWeight(.bold)
-            }
-            .sheet(isPresented: $showSignup) {
-                NavigationStack {
-                    SignupView()
-                }
-            }
-
-            Spacer()
         }
-        .alert("Login Error", isPresented: $showError) {
-            Button("OK", role: .cancel) { }
-        } message: {
-            Text(errorMessage)
-        }
-    }
     }
 }
 
