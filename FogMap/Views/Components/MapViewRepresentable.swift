@@ -13,6 +13,7 @@ struct MapViewRepresentable: UIViewRepresentable {
     @ObservedObject var locationManager: LocationManager
     @Binding var recenter: Bool
     @AppStorage("mapStyle") private var mapStyle: String = "Standard"
+    @AppStorage("appTheme") private var appTheme: String = "Dark"
     static var exploredCoordinates: [CLLocationCoordinate2D] = []
     // Grid system to estimate explored world percentage
     static var visitedTiles: Set<String> = []
@@ -49,8 +50,8 @@ struct MapViewRepresentable: UIViewRepresentable {
     func makeUIView(context: Context) -> MKMapView {
 
         let mapView = MKMapView()
-        // Force the map to use dark mode appearance
-        mapView.overrideUserInterfaceStyle = .dark
+        // Force the map to use dark or light mode by theme
+        mapView.overrideUserInterfaceStyle = appTheme == "Dark" ? .dark : .light
         mapView.showsUserLocation = true
         mapView.showsCompass = true
         // Use the explicit API so the heading arrow appears reliably
@@ -176,6 +177,7 @@ class GlobalFogOverlay: NSObject, MKOverlay {
 
 class GlobalFogRenderer: MKOverlayRenderer {
     @AppStorage("fogOpacity") private var fogOpacity: Double = 0.8
+    @AppStorage("appTheme") private var appTheme: String = "Dark"
 
     lazy var maskImage: CGImage? = { () -> CGImage? in
 
@@ -211,7 +213,8 @@ class GlobalFogRenderer: MKOverlayRenderer {
         if let fog = fogTexture {
             context.draw(fog, in: rect)
         } else {
-            context.setFillColor(UIColor.black.cgColor)
+            let color = appTheme == "Dark" ? UIColor.black : UIColor.white
+            context.setFillColor(color.cgColor)
             context.fill(rect)
         }
 

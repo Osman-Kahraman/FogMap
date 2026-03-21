@@ -63,7 +63,7 @@ struct SettingsView: View {
 
                     Button("Backup Now") {
                         Task {
-                            // You should replace this with real data source later
+                            // I should replace this with real data source later
                             let sampleCountries = ["Canada", "Turkey", "Japan"]
 
                             await CloudBackupService.shared.saveVisitedCountries(sampleCountries)
@@ -107,7 +107,7 @@ struct SettingsView: View {
                     }
                 }
                 Section(header: Text("About")) {
-                    Text("Version 1.0.0")
+                    Text("Version 0.6-beta")
                 }
             }
             .navigationTitle("Settings")
