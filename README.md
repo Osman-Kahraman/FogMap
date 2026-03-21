@@ -161,7 +161,7 @@ The Wiki includes:
 
 ## License
 
-This tool is under the [MIT License](LICENSE.md)
+This tool is under the [MIT License](https://github.com/Osman-Kahraman/FogMap?tab=MIT-1-ov-file)
 
 <p align="center">
   <b>Official iOS app coming soon on the App Store.</b>
