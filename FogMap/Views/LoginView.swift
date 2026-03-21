@@ -16,6 +16,7 @@ struct LoginView: View {
     @State private var currentNonce: String?
     @State private var showError = false
     @State private var errorMessage = ""
+    @State private var animateFog = false
 
     var body: some View {
         
@@ -34,32 +35,52 @@ struct LoginView: View {
                         // Top Left
                         Image("fog")
                             .resizable()
-                            .frame(width: size, height: size)
+                            .frame(width: size * 1.4, height: size * 1.4)
+                            .clipped()
+                            .scaleEffect(1.1)
                             .rotationEffect(.degrees(270))
+                            .offset(x: animateFog ? 12 : -12, y: animateFog ? 11 : -11)
                             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                        
+
                         // Top Right
                         Image("fog")
                             .resizable()
-                            .frame(width: size, height: size)
+                            .frame(width: size * 1.4, height: size * 1.4)
+                            .clipped()
+                            .scaleEffect(1.1)
+                            .offset(x: animateFog ? 7 : -7, y: animateFog ? 6 : -6)
                             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-                        
+
                         // Bottom Left
                         Image("fog")
                             .resizable()
-                            .frame(width: size, height: size)
+                            .frame(width: size * 1.4, height: size * 1.4)
+                            .clipped()
+                            .scaleEffect(1.1)
                             .rotationEffect(.degrees(180))
+                            .offset(x: animateFog ? 8 : -8, y: animateFog ? 3 : -3)
                             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
-                        
+
                         // Bottom Right
                         Image("fog")
                             .resizable()
-                            .frame(width: size, height: size)
+                            .frame(width: size * 1.4, height: size * 1.4)
+                            .clipped()
+                            .scaleEffect(1.1)
                             .rotationEffect(.degrees(90))
+                            .offset(x: animateFog ? 10 : -10, y: animateFog ? 9 : -9)
                             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
                     }
                 }
                 .ignoresSafeArea()
+                .onAppear {
+                    withAnimation(
+                        .easeInOut(duration: 12)
+                        .repeatForever(autoreverses: true)
+                    ) {
+                        animateFog = true
+                    }
+                }
                 
                 VStack(spacing: 30) {
                     
