@@ -13,6 +13,7 @@ import GoogleSignIn
 struct FogMapApp: App {
     @StateObject var authManager = AuthManager()
     @AppStorage("appTheme") private var appTheme: String = "Dark"
+    @State private var showLoading = false
 
     init() {
         FirebaseApp.configure()
@@ -21,13 +22,34 @@ struct FogMapApp: App {
     var body: some Scene {
 
         WindowGroup {
-            Group {
+            ZStack {
                 if authManager.isLoggedIn {
                     ContentView()
                         .environmentObject(authManager)
                 } else {
                     LoginView()
                         .environmentObject(authManager)
+                }
+
+                if showLoading {
+                    LoadingView()
+                        .zIndex(10)
+                        .transition(.opacity)
+                }
+            }
+            .onChange(of: authManager.isLoggedIn) {
+                if authManager.isLoggedIn {
+                    showLoading = true
+
+                    Task {
+                        try? await Task.sleep(nanoseconds: 7_400_000_000)
+
+                        await MainActor.run {
+                            withAnimation(.easeInOut(duration: 0)) {
+                                showLoading = false
+                            }
+                        }
+                    }
                 }
             }
             .onOpenURL { url in
@@ -38,7 +60,6 @@ struct FogMapApp: App {
                 appTheme == "Light" ? .light :
                 nil
             )
-
         }
     }
 }

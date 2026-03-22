@@ -18,6 +18,7 @@ struct PassportView: View {
     @State private var nationality: String = ""
     @State private var visitedCountries: [String] = []
     @State private var newlyUnlocked: Set<String> = []
+    @State private var showLoading = false
     
     init(
         firstName: String = "",
@@ -52,10 +53,15 @@ struct PassportView: View {
                                     .clipShape(RoundedRectangle(cornerRadius: 8))
                                 
                                 Button("Logout") {
-                                    do {
-                                        try authManager.logout()
-                                    } catch {
-                                        print("Logout failed:", error)
+                                    showLoading = true
+
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                                        do {
+                                            try authManager.logout()
+                                        } catch {
+                                            print("Logout failed:", error)
+                                            showLoading = false
+                                        }
                                     }
                                 }
                                 .font(.caption)
@@ -197,6 +203,13 @@ struct PassportView: View {
                             .shadow(radius: 8)
                     )
                 }.navigationTitle("Passport")
+            }
+        }
+        .overlay {
+            if showLoading {
+                OutAnimationView()
+                    .transition(.opacity)
+                    .zIndex(10)
             }
         }
         .navigationTitle("Passport")

@@ -17,6 +17,8 @@ struct LoginView: View {
     @State private var showError = false
     @State private var errorMessage = ""
     @State private var animateFog = false
+    @State private var isOut = false
+    @State private var isIn = false
 
     var body: some View {
         
@@ -130,8 +132,16 @@ struct LoginView: View {
                         
                         Task {
                             do {
+                                isOut = true
+
+                                // Show loading FIRST
+                                try await Task.sleep(nanoseconds: 2_200_000_000)
+
+                                // Then perform login (this triggers root view change AFTER loading)
                                 try await authManager.login(email: email, password: password)
+
                             } catch {
+                                isOut = false
                                 errorMessage = "Invalid email or password. Please try again."
                                 showError = true
                             }
@@ -252,7 +262,27 @@ struct LoginView: View {
                 } message: {
                     Text(errorMessage)
                 }
+
+                if isOut {
+                    OutAnimationView()
+                        .transition(.opacity)
+                        .zIndex(10)
+                }/*
+                if isIn {
+                    InAnimationView()
+                        .transition(.opacity)
+                        .zIndex(10)
+                }*/
             }
+            /*.onAppear {
+                isOut = true
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                    withAnimation(.easeOut(duration: 0)) {
+                        isOut = false
+                    }
+                }
+            }*/
         }
     }
 }
