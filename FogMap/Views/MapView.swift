@@ -26,11 +26,9 @@ struct MapTabView: View {
                     HStack(alignment: .lastTextBaseline, spacing: 8) {
                         Text("Explored")
                             .font(.system(size: 14, weight: .bold))
-                            .foregroundColor(.white)
 
                         Text(String(format: "%.5f%%", MapViewRepresentable.exploredPercentage()))
                             .font(.system(size: 28, weight: .bold))
-                            .foregroundColor(.white)
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
