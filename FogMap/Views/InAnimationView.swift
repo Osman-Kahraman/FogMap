@@ -7,31 +7,35 @@
 
 import SwiftUI
 
+import SwiftUI
+
 struct InAnimationView: View {
 
-    @State private var animate = false
     @State private var expand = false
     
     var body: some View {
         
         ZStack {
-
             Color.black.ignoresSafeArea()
-
-            // Fog
-            Circle()
-                .fill(Color.black)
-                .frame(width: expand ? 1200 : 0, height: expand ? 1200 : 0)
-                .blendMode(.destinationOut)
-                .animation(
-                    .easeInOut(duration: 1.2),
-                    value: expand
-                )
         }
-        .compositingGroup()
+        .mask(
+            ZStack {
+                Rectangle()
+                    .fill(Color.white)
+
+                // Reveal circle
+                Circle()
+                    .frame(width: 1200, height: 1200)
+                    .scaleEffect(expand ? 1 : 0.01)
+                    .blendMode(.destinationOut)
+            }
+            .compositingGroup()
+        )
+        .allowsHitTesting(false)
         .onAppear {
-            animate = true
-            expand = true
+            withAnimation(.easeInOut(duration: 1.2)) {
+                expand = true
+            }
         }
     }
 }

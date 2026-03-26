@@ -267,22 +267,22 @@ struct LoginView: View {
                     OutAnimationView()
                         .transition(.opacity)
                         .zIndex(10)
-                }/*
+                }
                 if isIn {
                     InAnimationView()
                         .transition(.opacity)
                         .zIndex(10)
-                }*/
+                }
             }
-            /*.onAppear {
-                isOut = true
+            .onAppear {
+                isIn = true
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
                     withAnimation(.easeOut(duration: 0)) {
-                        isOut = false
+                        isIn = false
                     }
                 }
-            }*/
+            }
         }
     }
 }

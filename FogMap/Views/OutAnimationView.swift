@@ -15,23 +15,25 @@ struct OutAnimationView: View {
     var body: some View {
         
         ZStack {
-
             Color.black.ignoresSafeArea()
-
-            // Fog
-            Circle()
-                .fill(Color.black)
-                .frame(width: expand ? 0 : 1200, height: expand ? 0 : 1200)
-                .blendMode(.destinationOut)
-                .animation(
-                    .easeInOut(duration: 1.2),
-                    value: expand
-                )
         }
-        .compositingGroup()
+        .mask(
+            ZStack {
+                Rectangle()
+                    .fill(Color.white)
+
+                Circle()
+                    .frame(width: 1200, height: 1200)
+                    .scaleEffect(expand ? 0.01 : 1)
+                    .blendMode(.destinationOut)
+            }
+            .compositingGroup()
+        )
+        .allowsHitTesting(false)
         .onAppear {
-            animate = true
-            expand = true
+            withAnimation(.easeInOut(duration: 1.2)) {
+                expand = true
+            }
         }
     }
 }
