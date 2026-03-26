@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-import SwiftUI
-
 struct InAnimationView: View {
 
     @State private var expand = false
