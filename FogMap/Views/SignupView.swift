@@ -7,7 +7,6 @@
 
 import SwiftUI
 import FirebaseAuth
-import FirebaseFirestore
 import PhotosUI
 
 struct SignupView: View {
@@ -141,18 +140,15 @@ struct SignupView: View {
 
                         guard let uid = Auth.auth().currentUser?.uid else { return }
 
-                        let db = Firestore.firestore()
+                        let profile = UserProfile(
+                            uid: uid,
+                            email: email,
+                            firstName: firstName,
+                            lastName: lastName,
+                            nationality: nationality
+                        )
 
-                        let photoURL: String = ""
-
-                        try await db.collection("users").document(uid).setData([
-                            "firstName": firstName,
-                            "lastName": lastName,
-                            "nationality": nationality,
-                            "email": email,
-                            "photoURL": photoURL,
-                            "createdAt": Timestamp(date: Date())
-                        ])
+                        try await UserService.shared.saveUserProfile(profile)
 
                         print("User created and profile saved")
 

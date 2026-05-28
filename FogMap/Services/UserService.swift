@@ -7,6 +7,7 @@
 
 import FirebaseFirestore
 import FirebaseAuth
+import Foundation
 
 class UserService {
     static let shared = UserService()
@@ -26,31 +27,36 @@ class UserService {
         }
     }
     
-    func createUserIfNeeded(
-        uid: String,
-        email: String,
-        firstName: String,
-        lastName: String,
-        nationality: String
-    ) async {
-        
-        let ref = db.collection("users").document(uid)
+    func createUserIfNeeded(_ profile: UserProfile) async {
+        let ref = db.collection("users").document(profile.uid)
 
         do {
             let doc = try await ref.getDocument()
 
             if !doc.exists {
-                try await ref.setData([
-                    "email": email,
-                    "firstName": firstName,
-                    "lastName": lastName,
-                    "nationality": nationality,
-                    "visitedCountries": [],
-                    "createdAt": Date()
-                ])
+                try await ref.setData(profile.firestoreData)
             }
         } catch {
             print("createUserIfNeeded error:", error)
+        }
+    }
+
+    func saveUserProfile(_ profile: UserProfile) async throws {
+        try await db.collection("users")
+            .document(profile.uid)
+            .setData(profile.firestoreData)
+    }
+
+    func fetchUserProfile(uid: String) async -> UserProfile? {
+        do {
+            let doc = try await db.collection("users").document(uid).getDocument()
+
+            guard let data = doc.data() else { return nil }
+
+            return UserProfile(uid: uid, data: data)
+        } catch {
+            print("fetchUserProfile error:", error)
+            return nil
         }
     }
 }

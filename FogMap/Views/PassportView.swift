@@ -7,7 +7,6 @@
 
 import SwiftUI
 import FirebaseAuth
-import FirebaseFirestore
 
 struct PassportView: View {
     @EnvironmentObject var authManager: AuthManager
@@ -213,39 +212,36 @@ struct PassportView: View {
             }
         }
         .navigationTitle("Passport")
-        .task {
-            guard let uid = Auth.auth().currentUser?.uid else { return }
-
-            let db = Firestore.firestore()
-            let doc = try? await db.collection("users").document(uid).getDocument()
-
-            if let data = doc?.data() {
-                firstName = data["firstName"] as? String ?? ""
-                lastName = data["lastName"] as? String ?? ""
-                nationality = data["nationality"] as? String ?? ""
-                
-                let newCountries = data["visitedCountries"] as? [String] ?? []
-
-                // Preventing first load of visitedCountries can be empty
-                if visitedCountries.isEmpty {
-                    visitedCountries = newCountries
-                } else {
-                    let diff = Set(newCountries).subtracting(visitedCountries)
-                    visitedCountries = newCountries
-                    newlyUnlocked = diff
-
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        newlyUnlocked.removeAll()
-                    }
-                }
-
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    newlyUnlocked.removeAll()
-                }
-            }
+        .task(id: Auth.auth().currentUser?.uid) {
+            await loadProfile()
         }
     }
     
+    private func loadProfile() async {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        guard let profile = await UserService.shared.fetchUserProfile(uid: uid) else { return }
+
+        await MainActor.run {
+            firstName = profile.firstName
+            lastName = profile.lastName
+            nationality = profile.nationality
+
+            let newCountries = profile.visitedCountries
+
+            if visitedCountries.isEmpty {
+                visitedCountries = newCountries
+            } else {
+                let diff = Set(newCountries).subtracting(visitedCountries)
+                visitedCountries = newCountries
+                newlyUnlocked = diff
+            }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                newlyUnlocked.removeAll()
+            }
+        }
+    }
+
     func flagEmoji(for country: String) -> String {
         let locale = Locale.current
 

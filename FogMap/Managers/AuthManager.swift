@@ -83,13 +83,15 @@ class AuthManager: ObservableObject {
         let firstName = components.first.map(String.init) ?? ""
         let lastName = components.dropFirst().joined(separator: " ")
 
-        await UserService.shared.createUserIfNeeded(
+        let profile = UserProfile(
             uid: user.uid,
             email: user.email ?? "",
             firstName: firstName,
             lastName: lastName,
             nationality: "Google"
         )
+
+        await UserService.shared.createUserIfNeeded(profile)
     }
     
     func randomNonceString(length: Int = 32) -> String {
@@ -140,12 +142,14 @@ class AuthManager: ObservableObject {
 
         guard let user = Auth.auth().currentUser else { return }
 
-        await UserService.shared.createUserIfNeeded(
+        let profile = UserProfile(
             uid: user.uid,
             email: user.email ?? "",
             firstName: credential.fullName?.givenName ?? "",
             lastName: credential.fullName?.familyName ?? "",
             nationality: "Apple"
         )
+
+        await UserService.shared.createUserIfNeeded(profile)
     }
 }
