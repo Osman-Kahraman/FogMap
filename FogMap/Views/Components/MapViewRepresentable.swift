@@ -56,16 +56,7 @@ struct MapViewRepresentable: UIViewRepresentable {
         mapView.showsCompass = true
         // Use the explicit API so the heading arrow appears reliably
         mapView.setUserTrackingMode(.followWithHeading, animated: false)
-        // Add a visible compass button like Apple Maps
-        let compass = MKCompassButton(mapView: mapView)
-        compass.compassVisibility = .visible
-        compass.translatesAutoresizingMaskIntoConstraints = false
-        mapView.addSubview(compass)
-
-        NSLayoutConstraint.activate([
-            compass.topAnchor.constraint(equalTo: mapView.safeAreaLayoutGuide.topAnchor, constant: 10),
-            compass.trailingAnchor.constraint(equalTo: mapView.trailingAnchor, constant: -10)
-        ])
+        
         mapView.delegate = context.coordinator
 
         let region = MKCoordinateRegion(

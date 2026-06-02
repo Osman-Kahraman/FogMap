@@ -17,15 +17,13 @@ class AuthManager: ObservableObject {
     private var authStateListener: AuthStateDidChangeListenerHandle?
 
     @Published var isLoggedIn: Bool = false
+    @Published private(set) var currentUserID: String?
 
     init() {
         authStateListener = Auth.auth().addStateDidChangeListener { [weak self] _, user in
             DispatchQueue.main.async {
-                if user != nil {
-                    self?.isLoggedIn = true
-                } else {
-                    self?.isLoggedIn = false
-                }
+                self?.currentUserID = user?.uid
+                self?.isLoggedIn = user != nil
             }
         }
     }
