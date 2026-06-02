@@ -49,7 +49,7 @@ struct PassportView: View {
                                     showLoading = true
 
                                     Task {
-                                        try? await Task.sleep(for: .seconds(1.2))
+                                        try? await Task.sleep(for: .seconds(1.35))
 
                                         do {
                                             try authManager.logout()
@@ -204,6 +204,7 @@ struct PassportView: View {
             }
         }
         .navigationTitle("Passport")
+        .toolbar(showLoading ? .hidden : .visible, for: .tabBar)
         .task(id: authManager.currentUserID) {
             await viewModel.loadProfile(uid: authManager.currentUserID)
         }

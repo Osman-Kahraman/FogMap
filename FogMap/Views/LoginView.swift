@@ -18,7 +18,7 @@ struct LoginView: View {
     @State private var errorMessage = ""
     @State private var animateFog = false
     @State private var isOut = false
-    @State private var isIn = false
+    @State private var isIn = true
 
     var body: some View {
         
@@ -275,9 +275,9 @@ struct LoginView: View {
                 }
             }
             .onAppear {
-                isIn = true
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                Task {
+                    try? await Task.sleep(for: .seconds(1.2))
+
                     withAnimation(.easeOut(duration: 0)) {
                         isIn = false
                     }
