@@ -23,8 +23,8 @@ struct InAnimationView: View {
 
                 // Reveal circle
                 Circle()
-                    .frame(width: 1200, height: 1200)
-                    .scaleEffect(expand ? 1 : 0.01)
+                    .frame(width: 4200, height: 4200)
+                    .scaleEffect(expand ? 1 : 0)
                     .blendMode(.destinationOut)
             }
             .compositingGroup()

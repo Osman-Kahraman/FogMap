@@ -48,6 +48,27 @@ struct MapTabView: View {
 
                 Spacer()
             }
+            
+            VStack {
+                Spacer()
+
+                HStack {
+                    Spacer()
+
+                    Button {
+                        recenterMap = true
+                    } label: {
+                        Image(systemName: "location.fill")
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundColor(.white)
+                            .padding(14)
+                            .background(Color.blue)
+                            .clipShape(Circle())
+                            .shadow(radius: 5)
+                    }
+                    .padding()
+                }
+            }
         }
     }
 }

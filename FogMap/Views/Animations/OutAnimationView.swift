@@ -23,8 +23,8 @@ struct OutAnimationView: View {
                     .fill(Color.white)
 
                 Circle()
-                    .frame(width: 1200, height: 1200)
-                    .scaleEffect(expand ? 0.01 : 1)
+                    .frame(width: 4200, height: 4200)
+                    .scaleEffect(expand ? 0 : 1)
                     .blendMode(.destinationOut)
             }
             .compositingGroup()

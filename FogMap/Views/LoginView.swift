@@ -85,7 +85,7 @@ struct LoginView: View {
                 }
                 
                 VStack(spacing: 30) {
-                    
+                    Spacer()
                     
                     // Logo
                     VStack(spacing: 10) {

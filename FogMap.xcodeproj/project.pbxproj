@@ -300,6 +300,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FogMap/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = FogMap;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "FogMap needs your location to reveal nearby places on the map.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -333,6 +334,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FogMap/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = FogMap;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "FogMap needs your location to reveal nearby places on the map.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
