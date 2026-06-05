@@ -19,6 +19,7 @@ struct LoginView: View {
     @State private var animateFog = false
     @State private var isOut = false
     @State private var isIn = true
+    @State private var playInAnimation = false
 
     var body: some View {
         
@@ -269,13 +270,16 @@ struct LoginView: View {
                         .zIndex(10)
                 }
                 if isIn {
-                    InAnimationView()
+                    InAnimationView(play: playInAnimation)
                         .transition(.opacity)
                         .zIndex(10)
                 }
             }
             .onAppear {
                 Task {
+                    playInAnimation = false
+                    try? await Task.sleep(for: .seconds(0.08))
+                    playInAnimation = true
                     try? await Task.sleep(for: .seconds(1.2))
 
                     withAnimation(.easeOut(duration: 0)) {

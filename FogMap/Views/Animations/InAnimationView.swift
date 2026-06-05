@@ -8,7 +8,13 @@
 import SwiftUI
 
 struct InAnimationView: View {
+    let play: Bool
+
     @State private var expand = false
+
+    init(play: Bool = true) {
+        self.play = play
+    }
 
     var body: some View {
         GeometryReader { geo in
@@ -42,9 +48,19 @@ struct InAnimationView: View {
         .ignoresSafeArea()
         .allowsHitTesting(false)
         .onAppear {
-            withAnimation(.easeInOut(duration: 1.2)) {
-                expand = true
-            }
+            expand = false
+            animateIfNeeded()
+        }
+        .onChange(of: play) {
+            animateIfNeeded()
+        }
+    }
+
+    private func animateIfNeeded() {
+        guard play else { return }
+
+        withAnimation(.easeInOut(duration: 1.2)) {
+            expand = true
         }
     }
 }
