@@ -15,6 +15,8 @@ struct FogMapApp: App {
     @AppStorage("appTheme") private var appTheme: String = "Dark"
     @State private var showLoading = false
     @State private var allowContent = false
+    @State private var showContentInAnimation = false
+    @State private var playContentInAnimation = false
 
     init() {
         FirebaseApp.configure()
@@ -41,6 +43,12 @@ struct FogMapApp: App {
                         .zIndex(10)
                         .transition(.opacity)
                 }
+
+                if showContentInAnimation {
+                    InAnimationView(play: playContentInAnimation)
+                        .zIndex(11)
+                        .transition(.opacity)
+                }
             }
             .onChange(of: authManager.isLoggedIn) { oldValue, newValue in
                 if newValue {
@@ -52,14 +60,28 @@ struct FogMapApp: App {
 
                         await MainActor.run {
                             allowContent = true
+                            playContentInAnimation = false
+                            showContentInAnimation = true
                             withAnimation(.easeInOut(duration: 0)) {
                                 showLoading = false
                             }
+                        }
+
+                        try? await Task.sleep(for: .seconds(0.08))
+                        await MainActor.run {
+                            playContentInAnimation = true
+                        }
+
+                        try? await Task.sleep(for: .seconds(1.2))
+                        await MainActor.run {
+                            showContentInAnimation = false
                         }
                     }
                 } else {
                     // Reset when logging out
                     allowContent = false
+                    showContentInAnimation = false
+                    playContentInAnimation = false
                 }
             }
             .onOpenURL { url in

@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct LoadingView: View {
-
     @State private var animate = false
     @State private var expand = false
     @State private var messageIndex = 0
@@ -21,9 +20,7 @@ struct LoadingView: View {
     ]
     
     var body: some View {
-        
         ZStack {
-
             Color.black.ignoresSafeArea()
 
             // Fog
