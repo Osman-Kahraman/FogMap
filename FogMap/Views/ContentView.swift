@@ -13,6 +13,7 @@ struct ContentView: View {
     @StateObject var locationManager = LocationManager()
     @State private var recenterMap = false
     @State private var selectedTab: Int = 0
+    @State private var showLogoutAnimation = false
     @AppStorage("appTheme") private var appTheme: String = "Dark"
 
     func updateTabBarAppearance() {
@@ -38,31 +39,39 @@ struct ContentView: View {
 
     var body: some View {
 
-        TabView(selection: $selectedTab) {
+        ZStack {
+            TabView(selection: $selectedTab) {
 
-            MapTabView(locationManager: locationManager, recenterMap: $recenterMap)
-                .tabItem {
-                    Image(systemName: "map.fill")
-                }
-                .tag(0)
+                MapTabView(locationManager: locationManager, recenterMap: $recenterMap)
+                    .tabItem {
+                        Image(systemName: "map.fill")
+                    }
+                    .tag(0)
 
-            PassportView()
-                .tabItem {
-                    Image(systemName: "wallet.pass")
-                }
-                .tag(1)
+                PassportView(showLogoutAnimation: $showLogoutAnimation)
+                    .tabItem {
+                        Image(systemName: "wallet.pass")
+                    }
+                    .tag(1)
 
-            LeaderboardView()
-                .tabItem {
-                    Image(systemName: "trophy.fill")
-                }
-                .tag(2)
+                LeaderboardView()
+                    .tabItem {
+                        Image(systemName: "trophy.fill")
+                    }
+                    .tag(2)
 
-            SettingsView()
-                .tabItem {
-                    Image(systemName: "gearshape.fill")
-                }
-                .tag(3)
+                SettingsView()
+                    .tabItem {
+                        Image(systemName: "gearshape.fill")
+                    }
+                    .tag(3)
+            }
+
+            if showLogoutAnimation {
+                OutAnimationView()
+                    .transition(.opacity)
+                    .zIndex(10)
+            }
         }
         .id(appTheme)
         .onAppear {

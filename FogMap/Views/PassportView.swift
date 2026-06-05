@@ -11,15 +11,17 @@ struct PassportView: View {
     @EnvironmentObject var authManager: AuthManager
     @Environment(\.colorScheme) var colorScheme
 
+    @Binding private var showLogoutAnimation: Bool
     @StateObject private var viewModel: PassportViewModel
-    @State private var showLoading = false
 
     init(
         firstName: String = "",
         lastName: String = "",
         nationality: String = "",
-        visitedCountries: [String] = []
+        visitedCountries: [String] = [],
+        showLogoutAnimation: Binding<Bool> = .constant(false)
     ) {
+        _showLogoutAnimation = showLogoutAnimation
         _viewModel = StateObject(
             wrappedValue: PassportViewModel(
                 firstName: firstName,
@@ -46,7 +48,7 @@ struct PassportView: View {
                                     .clipShape(RoundedRectangle(cornerRadius: 8))
 
                                 Button("Logout") {
-                                    showLoading = true
+                                    showLogoutAnimation = true
 
                                     Task {
                                         try? await Task.sleep(for: .seconds(1.35))
@@ -55,7 +57,7 @@ struct PassportView: View {
                                             try authManager.logout()
                                         } catch {
                                             print("Logout failed:", error)
-                                            showLoading = false
+                                            showLogoutAnimation = false
                                         }
                                     }
                                 }
@@ -196,15 +198,7 @@ struct PassportView: View {
                 .navigationTitle("Passport")
             }
         }
-        .overlay {
-            if showLoading {
-                OutAnimationView()
-                    .transition(.opacity)
-                    .zIndex(10)
-            }
-        }
         .navigationTitle("Passport")
-        .toolbar(showLoading ? .hidden : .visible, for: .tabBar)
         .task(id: authManager.currentUserID) {
             await viewModel.loadProfile(uid: authManager.currentUserID)
         }
