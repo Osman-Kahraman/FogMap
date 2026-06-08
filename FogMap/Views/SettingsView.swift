@@ -7,6 +7,7 @@
 
 import SwiftUI
 import CloudKit
+import UIKit
 
 struct SettingsView: View {
     enum AppTheme: String, CaseIterable, Identifiable {
@@ -54,6 +55,10 @@ struct SettingsView: View {
                             Slider(value: $fogOpacity, in: 0.3...1.0)
                             Text("\(Int(fogOpacity * 100))%")
                         }
+                    }
+
+                    Button("Open Location Settings") {
+                        openAppSettings()
                     }
                 }
 
@@ -196,6 +201,11 @@ struct SettingsView: View {
         } catch {
             statusMessage = error.localizedDescription
         }
+    }
+
+    private func openAppSettings() {
+        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+        UIApplication.shared.open(url)
     }
 
     private func label(for status: CKAccountStatus) -> String {
