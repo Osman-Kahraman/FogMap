@@ -59,11 +59,16 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
                 // Throttled iCloud backup (every 30s)
                 let now = Date()
-                if now.timeIntervalSince(lastCloudSync) > 30 {
+                let iCloudEnabled = UserDefaults.standard.bool(forKey: "iCloudBackupEnabled")
+                let autoSyncEnabled = UserDefaults.standard.object(forKey: "iCloudAutoSyncEnabled") as? Bool ?? true
+
+                if iCloudEnabled && autoSyncEnabled && now.timeIntervalSince(lastCloudSync) > 30 {
                     lastCloudSync = now
-                    await CloudBackupService.shared.saveVisitedCountries(
-                        Array(visitedCountries)
-                    )
+
+                    if let uid = Auth.auth().currentUser?.uid,
+                       let profile = await UserService.shared.fetchUserProfile(uid: uid) {
+                        try? await CloudBackupService.shared.saveVisitedCountries(profile.visitedCountries)
+                    }
                 }
             }
         }

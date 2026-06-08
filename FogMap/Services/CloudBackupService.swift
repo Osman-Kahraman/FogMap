@@ -5,38 +5,67 @@
 //  Created by Osman Kahraman on 2026-03-19.
 //
 
-
 import CloudKit
+import Foundation
 
-class CloudBackupService {
+struct CloudMapBackup {
+    let visitedCountries: [String]
+    let updatedAt: Date?
+}
 
+final class CloudBackupService {
     static let shared = CloudBackupService()
-    private let db = CKContainer.default().privateCloudDatabase
 
-    func saveVisitedCountries(_ countries: [String]) async {
-        let recordID = CKRecord.ID(recordName: "user-map-backup")
-        let record = CKRecord(recordType: "MapBackup", recordID: recordID)
+    private let container = CKContainer(identifier: "iCloud.kahramanosman.FogMap")
+    private let recordID = CKRecord.ID(recordName: "user-map-backup")
 
-        record["visitedCountries"] = countries as CKRecordValue
+    private var db: CKDatabase {
+        container.privateCloudDatabase
+    }
+
+    func accountStatus() async throws -> CKAccountStatus {
+        try await container.accountStatus()
+    }
+
+    func saveVisitedCountries(_ countries: [String]) async throws {
+        let record = try await existingBackupRecord()
+        let sortedCountries = Array(Set(countries)).sorted()
+
+        record["visitedCountries"] = sortedCountries as CKRecordValue
         record["updatedAt"] = Date() as CKRecordValue
 
+        _ = try await db.save(record)
+    }
+
+    func fetchBackup() async throws -> CloudMapBackup? {
         do {
-            try await db.save(record)
-            print("Map backup saved (updated)")
+            let record = try await db.record(for: recordID)
+            let countries = record["visitedCountries"] as? [String] ?? []
+            let updatedAt = record["updatedAt"] as? Date
+            return CloudMapBackup(visitedCountries: countries, updatedAt: updatedAt)
         } catch {
-            print("iCloud save error:", error)
+            if isMissingRecord(error) {
+                return nil
+            }
+
+            throw error
         }
     }
 
-    func fetchBackup() async -> [String]? {
-        let recordID = CKRecord.ID(recordName: "user-map-backup")
-
+    private func existingBackupRecord() async throws -> CKRecord {
         do {
-            let record = try await db.record(for: recordID)
-            return record["visitedCountries"] as? [String]
+            return try await db.record(for: recordID)
         } catch {
-            print("iCloud fetch error:", error)
-            return nil
+            if isMissingRecord(error) {
+                return CKRecord(recordType: "MapBackup", recordID: recordID)
+            }
+
+            throw error
         }
+    }
+
+    private func isMissingRecord(_ error: Error) -> Bool {
+        guard let ckError = error as? CKError else { return false }
+        return ckError.code == .unknownItem
     }
 }

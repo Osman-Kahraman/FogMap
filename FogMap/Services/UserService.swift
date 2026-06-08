@@ -59,4 +59,12 @@ class UserService {
             return nil
         }
     }
+
+    func updateVisitedCountries(uid: String, countries: [String]) async throws {
+        try await db.collection("users")
+            .document(uid)
+            .setData([
+                "visitedCountries": Array(Set(countries)).sorted()
+            ], merge: true)
+    }
 }

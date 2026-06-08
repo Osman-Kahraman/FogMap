@@ -17,29 +17,32 @@ struct SettingsView: View {
         var id: String { rawValue }
     }
 
+    @EnvironmentObject var authManager: AuthManager
+
     @AppStorage("appTheme") private var appTheme: String = AppTheme.system.rawValue
     @AppStorage("fogOpacity") private var fogOpacity: Double = 0.8
     @AppStorage("mapStyle") private var mapStyle: String = "Standard"
-    @State private var iCloudEnabled = false
-    @State private var iCloudAutoSync = true
+    @AppStorage("iCloudBackupEnabled") private var iCloudEnabled = false
+    @AppStorage("iCloudAutoSyncEnabled") private var iCloudAutoSync = true
+
     @State private var lastBackupDate: Date? = nil
-    @State private var backupSize: String = "0 MB"
+    @State private var backupSize: String = "0 countries"
+    @State private var iCloudStatus = "Checking"
+    @State private var statusMessage: String?
+    @State private var isWorking = false
 
     var body: some View {
-
         NavigationStack {
             Form {
                 Section(header: Text("App Preferences")) {
-
                     Picker("App Theme", selection: $appTheme) {
                         ForEach(AppTheme.allCases) { theme in
                             Text(theme.rawValue).tag(theme.rawValue)
                         }
                     }
                 }
-                
-                Section(header: Text("Map Settings")) {
 
+                Section(header: Text("Map Settings")) {
                     Picker("Map Style", selection: $mapStyle) {
                         Text("Standard").tag("Standard")
                         Text("Satellite").tag("Satellite")
@@ -53,8 +56,14 @@ struct SettingsView: View {
                         }
                     }
                 }
-                
+
                 Section(header: Label("Cloud Backup", systemImage: "icloud")) {
+                    HStack {
+                        Text("iCloud Status")
+                        Spacer()
+                        Text(iCloudStatus)
+                            .foregroundColor(.secondary)
+                    }
 
                     Toggle("Enable iCloud Backup", isOn: $iCloudEnabled)
 
@@ -63,29 +72,17 @@ struct SettingsView: View {
 
                     Button("Backup Now") {
                         Task {
-                            // I should replace this with real data source later
-                            let sampleCountries = ["Canada", "Turkey", "Japan"]
-
-                            await CloudBackupService.shared.saveVisitedCountries(sampleCountries)
-
-                            lastBackupDate = Date()
-                            backupSize = "\(sampleCountries.count) countries"
+                            await backupNow()
                         }
                     }
-                    .disabled(!iCloudEnabled)
+                    .disabled(!canUseCloudBackup)
 
                     Button("Restore from iCloud") {
-                        print("It will be added one I pay Apple Developer account...")
-                        /*Task {
-                            if let countries = await CloudBackupService.shared.fetchBackup() {
-                                print("Restored countries:", countries)
-
-                                lastBackupDate = Date()
-                                backupSize = "\(countries.count) countries"
-                            }
-                        }*/
+                        Task {
+                            await restoreBackup()
+                        }
                     }
-                    .disabled(!iCloudEnabled)
+                    .disabled(!canUseCloudBackup)
 
                     HStack {
                         Text("Last Backup")
@@ -105,16 +102,121 @@ struct SettingsView: View {
                         Text(backupSize)
                             .foregroundColor(.secondary)
                     }
+
+                    if let statusMessage {
+                        Text(statusMessage)
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                    }
                 }
+
                 Section(header: Text("About")) {
-                    Text("Version 0.6-beta")
+                    Text("Version 0.8")
                 }
             }
             .navigationTitle("Settings")
+            .task {
+                await refreshCloudStatus()
+                await refreshBackupMetadata()
+            }
+        }
+    }
+
+    private var canUseCloudBackup: Bool {
+        iCloudEnabled && iCloudStatus == "Available" && !isWorking
+    }
+
+    private func refreshCloudStatus() async {
+        do {
+            let status = try await CloudBackupService.shared.accountStatus()
+            iCloudStatus = label(for: status)
+        } catch {
+            iCloudStatus = "Unavailable"
+            statusMessage = error.localizedDescription
+        }
+    }
+
+    private func refreshBackupMetadata() async {
+        do {
+            guard let backup = try await CloudBackupService.shared.fetchBackup() else { return }
+            lastBackupDate = backup.updatedAt
+            backupSize = "\(backup.visitedCountries.count) countries"
+        } catch {
+            statusMessage = error.localizedDescription
+        }
+    }
+
+    private func backupNow() async {
+        guard let uid = authManager.currentUserID else {
+            statusMessage = "You need to be signed in."
+            return
+        }
+
+        isWorking = true
+        defer { isWorking = false }
+
+        guard let profile = await UserService.shared.fetchUserProfile(uid: uid) else {
+            statusMessage = "Could not load your profile."
+            return
+        }
+
+        do {
+            try await CloudBackupService.shared.saveVisitedCountries(profile.visitedCountries)
+            lastBackupDate = Date()
+            backupSize = "\(profile.visitedCountries.count) countries"
+            statusMessage = "Backup completed."
+        } catch {
+            statusMessage = error.localizedDescription
+        }
+    }
+
+    private func restoreBackup() async {
+        guard let uid = authManager.currentUserID else {
+            statusMessage = "You need to be signed in."
+            return
+        }
+
+        isWorking = true
+        defer { isWorking = false }
+
+        do {
+            guard let backup = try await CloudBackupService.shared.fetchBackup() else {
+                statusMessage = "No iCloud backup found."
+                return
+            }
+
+            let currentCountries = await UserService.shared.fetchUserProfile(uid: uid)?.visitedCountries ?? []
+            let mergedCountries = Array(Set(currentCountries).union(backup.visitedCountries)).sorted()
+
+            try await UserService.shared.updateVisitedCountries(uid: uid, countries: mergedCountries)
+
+            lastBackupDate = backup.updatedAt
+            backupSize = "\(backup.visitedCountries.count) countries"
+            statusMessage = "Restore completed."
+        } catch {
+            statusMessage = error.localizedDescription
+        }
+    }
+
+    private func label(for status: CKAccountStatus) -> String {
+        switch status {
+        case .available:
+            return "Available"
+        case .couldNotDetermine:
+            return "Unknown"
+        case .noAccount:
+            return "No Account"
+        case .restricted:
+            return "Restricted"
+        case .temporarilyUnavailable:
+            return "Unavailable"
+        @unknown default:
+            return "Unknown"
         }
     }
 }
 
 #Preview {
     SettingsView()
+        .environmentObject(AuthManager())
 }
