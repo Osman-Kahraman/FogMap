@@ -109,7 +109,10 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
         if let uid = Auth.auth().currentUser?.uid,
            let profile = await UserService.shared.fetchUserProfile(uid: uid) {
-            try? await CloudBackupService.shared.saveVisitedCountries(profile.visitedCountries)
+            try? await CloudBackupService.shared.saveBackup(
+                visitedCountries: profile.visitedCountries,
+                exploredCoordinates: []
+            )
         }
     }
 }
