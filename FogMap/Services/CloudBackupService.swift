@@ -10,6 +10,7 @@ import Foundation
 
 struct CloudMapBackup {
     let visitedCountries: [String]
+    let exploredCoordinates: [String] // format: "lat,lon"
     let updatedAt: Date?
 }
 
@@ -27,13 +28,17 @@ final class CloudBackupService {
         try await container.accountStatus()
     }
 
+    @available(*, deprecated, message: "Use saveBackup(visitedCountries:exploredCoordinates:) instead")
     func saveVisitedCountries(_ countries: [String]) async throws {
+        try await saveBackup(visitedCountries: countries, exploredCoordinates: [])
+    }
+
+    func saveBackup(visitedCountries: [String], exploredCoordinates: [String]) async throws {
         let record = try await existingBackupRecord()
-        let sortedCountries = Array(Set(countries)).sorted()
-
+        let sortedCountries = Array(Set(visitedCountries)).sorted()
         record["visitedCountries"] = sortedCountries as CKRecordValue
+        record["exploredCoordinates"] = exploredCoordinates as CKRecordValue
         record["updatedAt"] = Date() as CKRecordValue
-
         _ = try await db.save(record)
     }
 
@@ -41,8 +46,9 @@ final class CloudBackupService {
         do {
             let record = try await db.record(for: recordID)
             let countries = record["visitedCountries"] as? [String] ?? []
+            let coords = record["exploredCoordinates"] as? [String] ?? []
             let updatedAt = record["updatedAt"] as? Date
-            return CloudMapBackup(visitedCountries: countries, updatedAt: updatedAt)
+            return CloudMapBackup(visitedCountries: countries, exploredCoordinates: coords, updatedAt: updatedAt)
         } catch {
             if isMissingRecord(error) {
                 return nil

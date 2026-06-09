@@ -8,6 +8,7 @@
 import SwiftUI
 import CloudKit
 import UIKit
+import CoreLocation
 
 struct SettingsView: View {
     enum AppTheme: String, CaseIterable, Identifiable {
@@ -151,6 +152,7 @@ struct SettingsView: View {
         }
     }
 
+    /// Backup now includes both visited countries and explored map coordinates.
     private func backupNow() async {
         guard let uid = authManager.currentUserID else {
             statusMessage = "You need to be signed in."
@@ -166,7 +168,11 @@ struct SettingsView: View {
         }
 
         do {
-            try await CloudBackupService.shared.saveVisitedCountries(profile.visitedCountries)
+            // Convert explored coordinates to strings in "lat,lon" format for backup
+            let exploredCoordStrings = MapViewRepresentable.exploredCoordinates.map { String(format: "%f,%f", $0.latitude, $0.longitude) }
+            
+            try await CloudBackupService.shared.saveBackup(visitedCountries: profile.visitedCountries, exploredCoordinates: exploredCoordStrings)
+
             lastBackupDate = Date()
             backupSize = "\(profile.visitedCountries.count) countries"
             statusMessage = "Backup completed."
@@ -175,6 +181,7 @@ struct SettingsView: View {
         }
     }
 
+    /// Restores backup including visited countries and explored map coordinates.
     private func restoreBackup() async {
         guard let uid = authManager.currentUserID else {
             statusMessage = "You need to be signed in."
@@ -189,6 +196,16 @@ struct SettingsView: View {
                 statusMessage = "No iCloud backup found."
                 return
             }
+
+            // Convert backup.exploredCoordinates strings back to CLLocationCoordinate2D
+            let restoredCoords = backup.exploredCoordinates.compactMap { str -> CLLocationCoordinate2D? in
+                let components = str.split(separator: ",").map { Double($0) }
+                if components.count == 2, let lat = components[0], let lon = components[1] {
+                    return CLLocationCoordinate2D(latitude: lat, longitude: lon)
+                } else { return nil }
+            }
+            MapViewRepresentable.exploredCoordinates = restoredCoords
+            MapViewRepresentable.saveExplored()
 
             let currentCountries = await UserService.shared.fetchUserProfile(uid: uid)?.visitedCountries ?? []
             let mergedCountries = Array(Set(currentCountries).union(backup.visitedCountries)).sorted()
