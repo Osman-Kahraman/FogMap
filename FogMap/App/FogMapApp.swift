@@ -8,6 +8,7 @@
 import SwiftUI
 import FirebaseCore
 import GoogleSignIn
+import UIKit
 
 @main
 struct FogMapApp: App {
@@ -95,3 +96,4 @@ struct FogMapApp: App {
         }
     }
 }
+

@@ -33,12 +33,16 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         manager.pausesLocationUpdatesAutomatically = true
         manager.showsBackgroundLocationIndicator = true
 
-        requestAuthorizationIfNeeded()
-        startEfficientLocationUpdatesIfAllowed()
+        // Request authorization only if status is not determined
+        if manager.authorizationStatus == .notDetermined {
+            manager.requestWhenInUseAuthorization()
+        }
+        // Do NOT start location updates here; they will start after authorization changes
     }
 
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        startEfficientLocationUpdatesIfAllowed()
+        // Start or stop location updates based on current authorization status
+        startEfficientLocationUpdatesIfAllowed(with: manager.authorizationStatus)
     }
 
     func locationManager(
@@ -53,22 +57,14 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         print("Location update failed:", error)
     }
 
-    private func requestAuthorizationIfNeeded() {
-        guard manager.authorizationStatus == .notDetermined else { return }
-        manager.requestWhenInUseAuthorization()
-    }
-
-    private func startEfficientLocationUpdatesIfAllowed() {
+    private func startEfficientLocationUpdatesIfAllowed(with status: CLAuthorizationStatus) {
         guard CLLocationManager.locationServicesEnabled() else { return }
 
-        switch manager.authorizationStatus {
-        case .authorizedAlways:
+        switch status {
+        case .authorizedAlways, .authorizedWhenInUse:
             manager.allowsBackgroundLocationUpdates = true
+            manager.startUpdatingLocation()
             manager.startMonitoringSignificantLocationChanges()
-            manager.startUpdatingLocation()
-        case .authorizedWhenInUse:
-            manager.allowsBackgroundLocationUpdates = true
-            manager.startUpdatingLocation()
         default:
             manager.stopUpdatingLocation()
             manager.stopMonitoringSignificantLocationChanges()
