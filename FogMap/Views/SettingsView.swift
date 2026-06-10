@@ -25,7 +25,7 @@ struct SettingsView: View {
     @AppStorage("fogOpacity") private var fogOpacity: Double = 0.8
     @AppStorage("mapStyle") private var mapStyle: String = "Standard"
     @AppStorage("iCloudBackupEnabled") private var iCloudEnabled = false
-    @AppStorage("iCloudAutoSyncEnabled") private var iCloudAutoSync = true
+    @AppStorage("iCloudAutoSyncEnabled") private var iCloudAutoSync = false
 
     @State private var lastBackupDate: Date? = nil
     @State private var backupSize: String = "0 countries"
