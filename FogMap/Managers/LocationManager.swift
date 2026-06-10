@@ -33,11 +33,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         manager.pausesLocationUpdatesAutomatically = true
         manager.showsBackgroundLocationIndicator = true
 
-        // Request authorization only if status is not determined
-        if manager.authorizationStatus == .notDetermined {
-            manager.requestWhenInUseAuthorization()
-        }
-        // Do NOT start location updates here; they will start after authorization changes
+        // Request authorization. Location updates will start from
+        // locationManagerDidChangeAuthorization(_:).
+        manager.requestWhenInUseAuthorization()
     }
 
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
@@ -58,8 +56,6 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
 
     private func startEfficientLocationUpdatesIfAllowed(with status: CLAuthorizationStatus) {
-        guard CLLocationManager.locationServicesEnabled() else { return }
-
         switch status {
         case .authorizedAlways, .authorizedWhenInUse:
             manager.allowsBackgroundLocationUpdates = true

@@ -175,13 +175,12 @@ struct SettingsView: View {
 
             lastBackupDate = Date()
             backupSize = "\(profile.visitedCountries.count) countries"
-            statusMessage = "Backup completed."
+            statusMessage = "Backup completed. -> \(exploredCoordStrings)"
         } catch {
             statusMessage = error.localizedDescription
         }
     }
 
-    /// Restores backup including visited countries and explored map coordinates.
     private func restoreBackup() async {
         guard let uid = authManager.currentUserID else {
             statusMessage = "You need to be signed in."
@@ -214,7 +213,7 @@ struct SettingsView: View {
 
             lastBackupDate = backup.updatedAt
             backupSize = "\(backup.visitedCountries.count) countries"
-            statusMessage = "Restore completed."
+            statusMessage = "Restore completed. \(restoredCoords)"
         } catch {
             statusMessage = error.localizedDescription
         }
