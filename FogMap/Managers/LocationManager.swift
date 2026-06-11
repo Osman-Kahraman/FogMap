@@ -39,8 +39,17 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
 
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        // Start or stop location updates based on current authorization status
-        startEfficientLocationUpdatesIfAllowed(with: manager.authorizationStatus)
+        switch manager.authorizationStatus {
+        case .authorizedWhenInUse:
+            manager.requestAlwaysAuthorization()
+            startEfficientLocationUpdatesIfAllowed(with: .authorizedWhenInUse)
+
+        case .authorizedAlways:
+            startEfficientLocationUpdatesIfAllowed(with: .authorizedAlways)
+
+        default:
+            startEfficientLocationUpdatesIfAllowed(with: manager.authorizationStatus)
+        }
     }
 
     func locationManager(
@@ -105,9 +114,17 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
         if let uid = Auth.auth().currentUser?.uid,
            let profile = await UserService.shared.fetchUserProfile(uid: uid) {
+
+            // Hop to the main actor to read a MainActor-isolated static property.
+            let coords = await MainActor.run { MapViewRepresentable.exploredCoordinates }
+
+            let coordinateStrings: [String] = coords.map { coord in
+                "\(coord.latitude),\(coord.longitude)"
+            }
+
             try? await CloudBackupService.shared.saveBackup(
                 visitedCountries: profile.visitedCountries,
-                exploredCoordinates: []
+                exploredCoordinates: coordinateStrings
             )
         }
     }
